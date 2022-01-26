@@ -5,7 +5,26 @@
         <title>Microlam</title>
         <link>https://microlam.io</link>
         <description>Microlam: AWS Serverless with Java</description>
-        <lastBuildDate>Wed, 26 Jan 2022 07:03:09 +0000</lastBuildDate>
+        <lastBuildDate>Wed, 26 Jan 2022 11:59:21 +0000</lastBuildDate>
+        
+        <item>
+            <title>Microlam 0.3.3 released - Support for GraalVM 22</title>
+            <link>
+                https://microlam.io/blog/microlam-0-3-3-released/
+            </link>
+            <description>
+                Microlam is a Java micro-framework dedicated to AWS Serverless targeting simplicity, hackability and efficiency. This release is adding support for the just released GraalVM 22.0.0.2 Come Join Us We value your feedback a lot so please report bugs, ask for improvements&#8230;&#8203; Let&#8217;s build something great together! If you are a...
+            </description>
+            <pubDate>Wed, 26 Jan 2022 00:00:00 +0000</pubDate>
+            <guid>
+                https://microlam.io/blog/microlam-0-3-3-released/
+            </guid>
+            
+            
+            
+            <author>Frank Afriat (https://twitter.com/microlam_io)</author>
+            
+        </item>
         
         <item>
             <title>Welcome to Microlam!</title>
