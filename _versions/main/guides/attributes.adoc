@@ -1,0 +1,33 @@
+:imagesdir: ./images
+
+:project-name: Microlam
+:microlam-version: 999-SNAPSHOT
+
+:maven-version: 3.6.2+
+:graalvm-version: 21.1.0
+:graalvm-flavor: 21.1.0-java11
+:mandrel-flavor: 21.1-java11
+:surefire-version: 3.0.0-M5
+:restassured-version: 4.3.3
+:gradle-version: 6.8.3
+
+:generated-dir: ../../../_generated-config/main
+:microlam-home-url: https://microlam.io
+:microlam-site-getting-started: /get-started
+:microlam-writing-extensions-guide: /guides/writing-extensions
+:microlam-site-publications: /publications
+:microlam-org-url: https://github.com/microlam-io
+:microlam-base-url: https://github.com/microlam-io/microlam
+:microlam-clone-url: https://github.com/microlam-io/microlam.git
+:microlam-archive-url: https://github.com/microlam-io/microlam/archive/master.zip
+:microlam-tree-url: https://github.com/microlam-io/microlam/tree/main
+:microlam-issues-url: https://github.com/microlam-io/microlam/issues
+:microlam-images-url: https://github.com/microlam-io/microlam-images/tree
+:microlam-chat-url: https://microlam.zulipchat.com
+:microlam-mailing-list-subscription-email: microlam-io+subscribe@googlegroups.com
+:microlam-mailing-list-index: https://groups.google.com/d/forum/microlam-io
+:quickstarts-base-url: https://github.com/microlam-io/microlam-quickstarts
+:quickstarts-clone-url: https://github.com/microlam-io/microlam-quickstarts.git
+:quickstarts-archive-url: https://github.com/microlam-io/microlam-quickstarts/archive/main.zip
+:quickstarts-blob-url: https://github.com/microlam-io/microlam-quickstarts/blob/main
+:quickstarts-tree-url: https://github.com/microlam-io/microlam-quickstarts/tree/main

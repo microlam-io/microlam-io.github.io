@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+{% assign page_title_version_suffix = '' %}
+{% if page.url contains '/guides/' %}
+  {% assign versioned_page = page.url | startswith: '/version/' %}
+  {% if versioned_page %}
+    {% assign page_title_version_suffix = page.url | replace_regex: '^/version/([^/]+)/.*', '\1' | prepend: ' - ' %}
+  {% endif %}
+{% endif %}
+{% if page.title %}
+  {% assign page.title page_title_starts_with_microlam = page.title | startswith: 'Microlam -' %}
+{% else %}
+  {% assign page.title page_title_starts_with_microlam = false %}
+{% endif %}
+
+<head>
+  <title>{% unless page_title_starts_with_microlam %}Microlam - {% endunless %}{{ page.title }}{{ page_title_version_suffix }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="{{ '/assets/javascript/highlight.pack.js' | relative_url }}" type="text/javascript"></script>
+  <META HTTP-EQUIV='X-XSS-Protection' CONTENT="1; mode=block">
+  <META HTTP-EQUIV='X-Content-Type-Options' CONTENT="nosniff">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Microlam_io"> 
+  <meta name="twitter:creator" content="@Microlam_io">
+  <meta property="og:url" content="{{ page.url | prepend: site.url }}" />
+  <meta property="og:title" content="{{ page.title }}{{ page_title_version_suffix }}" />
+  <meta property="og:description" content="{% if page.description %}{{ page.description }}{% else %}{{ site.description }}{% endif %}" />
+  {% if page.layout == 'guides' or page.layout == 'guides-index'  %}
+    {%assign canonical_url = page.url | replace_regex: '^/version/[^/]+', '' %}
+  {% else %}
+    {%assign canonical_url = page.url %}
+  {% endif %}
+  <link rel="canonical" href="{{ canonical_url | prepend: site.url }}">
+  <link rel="shortcut icon" type="image/png" href="{{ "/favicon.ico" | prepend: site.baseurl }}" >
+  <link rel="stylesheet" href="/guides/stylesheet/config.css" />
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}?2021-07-29" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <link rel="alternate" type="application/rss+xml"  href="/feed.xml" title="{{ site.title }}">
+  <script src="/assets/javascript/goan.js" type="text/javascript"></script>
+  <script src="/assets/javascript/hl.js" type="text/javascript"></script>
+</head>
+
+<body class="{% if page.url == '/' %}homepage{% else %}{{page.layout}}{% endif %}">
+  {% include header-navigation.html %}
+  <div class="content">
+    {{ content }}
+  </div>
+
+  {% include project-footer.html %}
+  {% include company-footer.html %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="{{ '/assets/javascript/mobile-nav.js' | relative_url }}"></script>
+  <script type="text/javascript" src="{{ '/assets/javascript/scroll-down.js' | relative_url }}"></script>
+  <script src="{{ '/assets/javascript/satellite.js' | relative_url }}" type="text/javascript"></script>
+  <script src="{{ '/guides/javascript/config.js' | relative_url }}" type="text/javascript"></script>
+  <script src="{{ '/assets/javascript/search-filter.js' | relative_url }}" type="text/javascript"></script>
+  <script src="{{ '/assets/javascript/guides-version-dropdown.js' | relative_url }}" type="text/javascript"></script>
+  <script src="{{ '/assets/javascript/back-to-top.js' | relative_url }}" type="text/javascript"></script>
+    <script src="{{ '/assets/javascript/clipboard.min.js' | relative_url }}" type="text/javascript"></script>
+  <script src="{{ '/assets/javascript/copy.js' | relative_url }}" type="text/javascript"></script>
+</body>
+
+</html>

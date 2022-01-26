@@ -1,0 +1,22 @@
+---
+layout: post
+title: 'Microlam 0.3.2 released - First public release'
+date: 2022-01-02
+tags: release
+synopsis: Microlam 0.3.2 is the first public release with support of compiling Java 17 code to arm64!
+author: fafriat
+---
+
+Microlam is a Java micro-framework dedicated to AWS Serverless targeting simplicity, hackability and efficiency.
+
+== Come Join Us
+
+We value your feedback a lot so please report bugs, ask for improvements... Let's build something great together!
+
+If you are a Microlam user or just curious, don't be shy and join our welcoming community:
+
+ * provide feedback on https://github.com/microlam-io/microlam/issues[GitHub];
+ * craft some code and https://github.com/microlam-io/microlam/pulls[push a PR];
+ * discuss with us on https://microlam.zulipchat.com/[Zulip] and on the https://groups.google.com/d/forum/microlam-io[mailing list];
+ * ask your questions on https://stackoverflow.com/questions/tagged/microlam[Stack Overflow].
+

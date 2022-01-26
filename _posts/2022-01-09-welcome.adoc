@@ -1,0 +1,20 @@
+---
+layout: post
+title: Welcome to Microlam!
+date: 2022-01-09 20:00:00.000 +0200
+tags: announcement
+author: fafriat
+---
+
+= Welcome to Microlam!
+
+Our mission is to simplify the developpment targetting AWS Serverless for the Java developer offering a simple 
+but not magic solution you can hack and personalize for your own needs.
+
+If you like this idea and want to help or show your interest:
+
+Join us on our https://groups.google.com/d/forum/microlam-io[Google group] or
+https://microlam.zulipchat.com[Zulip chat].
+
+You can also send us messages and follow us on twitter: https://twitter.com/microlam_io[@microlam_io]
+

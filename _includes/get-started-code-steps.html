@@ -1,0 +1,154 @@
+
+<div class="full-width-bg component-slim get-started-steps">
+  <div class="grid-wrapper">
+    <div class="width-2-12 width-12-12-m">
+      <h2 class="step">Step <span class="step-no">1</span></h2>
+    </div>
+    <div class="width-10-12 width-12-12-m">
+      <h3>Create the Getting Started Application</h3>
+      <p><u>Prerequisites</u>: JDK 11+, maven, <a href="https://docs.docker.com/get-docker/">docker</a>, <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a>, <a href="https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html">AWS CDK CLI</a></p>
+      <p>Run this script in your CLI:</p>
+      <div class="grid-wrapper">
+        <div class="width-6-12 width-12-12-m">
+          <div class= "highlighter-rouge">
+            <div class="highlight">
+              <pre class="highlight"><code>
+mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.8.3
+                 </code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p>And answer all the questions:</p>
+    <li>Choose a <code>groupId</code>, <code>artifactId</code>, <code>version</code> and <code>package</code> for your project.</li>
+    <li>Choose your <code>awsBucket</code> : this is the name of the S3 bucket where the lambda artifacts will be deployed</li>
+    <li>Choose your <code>awsProfile</code> : this is the name of your AWS profile</li>
+    <li>Choose your <code>awsRegion</code>: this is the name of an AWS region (ex: eu-west-1)</li>
+    <li>Choose your <code>lambdaName</code>: this is the name of your Lambda (must be also suitable as the name of the Java class for the Lambda).</li>
+
+    </div>
+    <div class="width-2-12 width-12-12-m">
+      <h2 class="step">Step <span class="step-no">2</span></h2>
+    </div>
+    <div class="width-10-12 width-12-12-m">
+      <h3>(Optional) Generate the Lambda native compilation configuration</h3>
+      <p>This project is already configured and ready for building, so you may skip to Step 4 directly...</p>
+      <p>Run this script in your CLI:</p>
+      <div class="grid-wrapper">
+        <div class="width-6-12 width-12-12-m">
+          <div class= "highlighter-rouge">
+            <div class="highlight">
+              <pre class="highlight"><code>
+mvn clean install -Dnative=java11-amd64 -Pjava,config
+                 </code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p>At the end of the build, you will find the Java deployment package in the <code>target/</code> folder with the name <code>[artifactId]-[version]-aws-lambda.jar</code>.<br/>
+        Also a docker container is running, letting you try your Java lambda locally with the GraalVM Tracing Agent.</p>
+      <p>The generated configuration is updated every 30s in folder: <code>src/main/resources/META-INF/native-image/[groupId]/[artifactId]/</code>.</p>
+        <p>With your IDE, you can run the the Junit Tests in class in <code>[package].devops.LocalLambdaTests</code> or use maven for that:</p>
+        <div class="grid-wrapper">
+          <div class="width-6-12 width-12-12-m">
+            <div class= "highlighter-rouge">
+              <div class="highlight">
+                <pre class="highlight"><code>
+mvn test -Dtest=[package].devops.LocalLambdaTests
+        </code></pre>
+        </div>
+        </div>
+        </div>
+        </div>
+        <p>Everything is ok ? It is time to build and test the Lambda Native deployment package.</p>
+    </div>
+    <div class="width-2-12 width-12-12-m">
+      <h2 class="step">Step <span class="step-no">3</span></h2>
+    </div>
+    <div class="width-10-12 width-12-12-m">
+      <h3>(Optional) Build your project in dev mode</h3>
+      <p>Run this script in your CLI:</p>
+      <div class="grid-wrapper">
+        <div class="width-6-12 width-12-12-m">
+          <div class= "highlighter-rouge">
+            <div class="highlight">
+              <pre class="highlight"><code>
+mvn install -Dnative=java11-amd64 -Pcompile,dev
+                 </code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p>Take some tea of coffee while the build is running because it may take some time for the first time...</p>
+      <p>At the end of the build, a docker container is running, letting you try your native lambda locally, before deploying to AWS.</p>
+      <p>With your IDE, you can run the the Junit Tests in class in <code>[package].devops.LocalLambdaTests</code> or use maven for that:</p>
+      <div class="grid-wrapper">
+        <div class="width-6-12 width-12-12-m">
+          <div class= "highlighter-rouge">
+            <div class="highlight">
+              <pre class="highlight"><code>
+mvn test -Dtest=[package].devops.LocalLambdaTests
+      </code></pre>
+      </div>
+      </div>
+      </div>
+      </div>
+      <p>Everything is ok ? It is time to extract the Lambda Native deployment package.</p>
+      <p>Run this script in another CLI:</p>
+      <div class="grid-wrapper">
+        <div class="width-6-12 width-12-12-m">
+          <div class= "highlighter-rouge">
+            <div class="highlight">
+              <pre class="highlight"><code>
+mvn docker:copy -Dnative=java11-amd64 -Pcompile
+      </code></pre>
+      </div>
+      </div>
+      </div>
+      </div>
+      <p>This will copy the Native deployment package to the <code>target/</code> folder with the name <code>[artifactId]-[version]-aws-lambda-native.zip</code>.</p>
+      <p>You can stop the running container with CTRL-C.</p>
+    </div>  
+    <div class="width-2-12 width-12-12-m">
+      <h2 class="step">Step <span class="step-no">4</span></h2>
+    </div>
+    <div class="width-10-12 width-12-12-m">
+      <h3>Build your project</h3>
+      <p>Run this script in your CLI:</p>
+      <div class="grid-wrapper">
+        <div class="width-6-12 width-12-12-m">
+          <div class= "highlighter-rouge">
+            <div class="highlight">
+              <pre class="highlight"><code>
+mvn install -Dnative=java11-amd64 -Pcompile
+                 </code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p>Take some tea of coffee while the build is running because it may take some time for the first time...</p>
+      <p>At the end of the build, you will find the Native deployment package in the <code>target/</code> folder with the name <code>[artifactId]-[version]-aws-lambda-native.zip</code>.
+    </div>
+    <div class="width-2-12 width-12-12-m">
+      <h2 class="step">Step <span class="step-no">5</span></h2>
+    </div>
+    <div class="width-10-12 width-12-12-m">
+      <h3>Deploy the Getting Started Application to AWS with the CDK</h3>
+      <p>You need to apply a few changes to the class <code>[package].devops.cdk.CreateApp</code> (from <code>src/test</code> folder), to set the function Runtime, Architecture and Code.</p>   
+      <p>Run this script in your CLI:</p>
+      <div class="grid-wrapper">
+        <div class="width-6-12 width-12-12-m">
+          <div class= "highlighter-rouge">
+            <div class="highlight">
+              <pre class="highlight"><code>
+cdk deploy
+                 </code></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+      <h4>Boom! Your Microlam app is now deployed to AWS</h4>
+    </div>
+  </div>
+</div>
+

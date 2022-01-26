@@ -1,0 +1,9 @@
+headline: "Guides"
+
+secondarycta: "Want to learn more? Check out the <a href='https://microlam.io/guides/'>guides</a> to continue your journey"
+
+links:
+- title: "Write Your First Application"
+  description: "Learn how to create, package, and deploy a Hello World Microlam application to deploy to AWS with functional tests."
+  link: https://microlam.io/guides/getting-started
+  cta_linktext: "Read the Guide"
