@@ -1,34 +1,49 @@
----
-layout: null
----
-
 <?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0">
 
     <channel>
-        <title>{{ site.title | xml_escape }}</title>
-        <link>{{ site.url }}</link>
-        <description>{{ site.description | xml_escape }}</description>
-        <lastBuildDate>{{ site.time | date_to_rfc822 }}</lastBuildDate>
-        {% for post in site.posts limit:10 %}
+        <title>Microlam</title>
+        <link>https://microlam.io</link>
+        <description>Microlam: AWS Serverless with Java</description>
+        <lastBuildDate>Wed, 26 Jan 2022 07:03:09 +0000</lastBuildDate>
+        
         <item>
-            <title>{{ post.title | xml_escape }}</title>
+            <title>Welcome to Microlam!</title>
             <link>
-                {{ post.url | prepend: site.url }}
+                https://microlam.io/blog/welcome/
             </link>
             <description>
-                {{ post.content | strip_html | truncatewords: '50' }}
+                Our mission is to simplify the developpment targetting AWS Serverless for the Java developer offering a simple but not magic solution you can hack and personalize for your own needs. If you like this idea and want to help or show your interest: Join us on our Google group or...
             </description>
-            <pubDate>{{ post.date | date_to_rfc822 }}</pubDate>
+            <pubDate>Sun, 09 Jan 2022 18:00:00 +0000</pubDate>
             <guid>
-                {{ post.url | prepend: site.url }}
+                https://microlam.io/blog/welcome/
             </guid>
-            {% assign post_author = post.author | default: post.authors[0] | default: site.author %}
-            {% assign post_author = site.data.authors[post_author] | default: post_author %}
-            {% if post_author %}
-            <author>{{ post_author.name | default: "" | xml_escape }}{% if post_author.twitter %} (https://twitter.com/{{ post_author.twitter | xml_escape }}){% endif %}</author>
-            {% endif %}
+            
+            
+            
+            <author>Frank Afriat (https://twitter.com/microlam_io)</author>
+            
         </item>
-        {% endfor %}
+        
+        <item>
+            <title>Microlam 0.3.2 released - First public release</title>
+            <link>
+                https://microlam.io/blog/microlam-0-3-2-released/
+            </link>
+            <description>
+                Microlam is a Java micro-framework dedicated to AWS Serverless targeting simplicity, hackability and efficiency. Come Join Us We value your feedback a lot so please report bugs, ask for improvements&#8230;&#8203; Let&#8217;s build something great together! If you are a Microlam user or just curious, don&#8217;t be shy and join our...
+            </description>
+            <pubDate>Sun, 02 Jan 2022 00:00:00 +0000</pubDate>
+            <guid>
+                https://microlam.io/blog/microlam-0-3-2-released/
+            </guid>
+            
+            
+            
+            <author>Frank Afriat (https://twitter.com/microlam_io)</author>
+            
+        </item>
+        
     </channel>
 </rss>
