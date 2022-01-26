@@ -1,0 +1,10 @@
+---  # document start
+
+categories:
+  - category: Getting Started
+    cat-id: getting-started
+    guides:
+      - title: Be Guided Through First Application
+        url: /guides/getting-started
+        description: Discover how to create your first Microlam application.
+         
