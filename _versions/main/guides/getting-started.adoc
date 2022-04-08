@@ -181,8 +181,16 @@ This command build the Java deployment package in `target/` folder with the name
 [TIP]
 .Which Java version to choose ?
 ====
-Currently AWS supports only `Java 8` or `Java 11` Runtimes, but it is possible to use custom solutions to deploy also for `Java 17`, see this (https://github.com/msailes/lambda-java17-layer)[AWS Lambda Java 17 Runtime] for example.
+Currently AWS supports only `Java 8` or `Java 11` Runtimes, but it is possible to use a Custom Runtime to deploy also for `Java 17`. Microlam is providing the maven argument `-Djava17layer=axx64` for bringing the layer, see next TIP for detailed instructions and this project (https://github.com/microlam-io/lambda-java17-layer)[AWS Lambda Java 17 Runtime].
 By default, Microlam is configured by default to use `Java 11`, but you can change this to `Java 17` by setting the property `release.version` to 17.
+====
+
+[TIP]
+.How to use Java 17 ?
+====
+First modify the pom.xml property: `release.version` to 17.
+Then use the command `mvn package -Pjava -Djava17layer=axx64` where `axx64` is `amd64` or `arm64`. This brings the java 17 layer in your `target/` folder.
+You need to deploy the Java 17 Layer and the simplest way is to use the CDK (but using the AWS console is also possible), see and update as necessary the Class `[xxx].devops.cdk.CreateApp` (from `src/test` folder).
 ====
 
 [TIP]

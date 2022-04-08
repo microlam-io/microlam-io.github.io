@@ -2,7 +2,7 @@
 
 :project-name: Microlam
 :microlam-version: 0.3.3
-:microlam-lambda-quickstart-version: 0.8.4
+:microlam-lambda-quickstart-version: 0.8.5
 
 
 :maven-version: 3.8.1+
