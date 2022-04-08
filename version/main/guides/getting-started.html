@@ -483,8 +483,25 @@ In order to offer an uniform development experience (for linux, MacOS or Windows
 <td class="content">
 <div class="title">Which Java version to choose ?</div>
 <div class="paragraph">
-<p>Currently AWS supports only <code>Java 8</code> or <code>Java 11</code> Runtimes, but it is possible to use custom solutions to deploy also for <code>Java 17</code>, see this (<a href="https://github.com/msailes/lambda-java17-layer)">AWS Lambda Java 17 Runtime</a> for example.
+<p>Currently AWS supports only <code>Java 8</code> or <code>Java 11</code> Runtimes, but it is possible to use a Custom Runtime to deploy also for <code>Java 17</code>. Microlam is providing the maven argument <code>-Djava17layer=axx64</code> for bringing the layer, see next TIP for detailed instructions and this project (<a href="https://github.com/microlam-io/lambda-java17-layer)">AWS Lambda Java 17 Runtime</a>.
 By default, Microlam is configured by default to use <code>Java 11</code>, but you can change this to <code>Java 17</code> by setting the property <code>release.version</code> to 17.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">How to use Java 17 ?</div>
+<div class="paragraph">
+<p>First modify the pom.xml property: <code>release.version</code> to 17.
+Then use the command <code>mvn package -Pjava -Djava17layer=axx64</code> where <code>axx64</code> is <code>amd64</code> or <code>arm64</code>. This brings the java 17 layer in your <code>target/</code> folder.
+You need to deploy the Java 17 Layer and the simplest way is to use the CDK (but using the AWS console is also possible), see and update as necessary the Class <code>[xxx].devops.cdk.CreateApp</code> (from <code>src/test</code> folder).</p>
 </div>
 </td>
 </tr>
