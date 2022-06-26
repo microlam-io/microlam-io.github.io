@@ -539,7 +539,7 @@ You need to deploy the Java 17 Layer and the simplest way is to use the CDK (but
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package -Djava11-amd64 -Pcompile</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean install -Djava11-amd64 -Pcompile</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -557,7 +557,7 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package -Djava11-amd64 -Pconfig</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean install -Djava11-amd64 -Pconfig</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -574,7 +574,7 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package -Djava11-amd64 -Pcompile,dev</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean install -Djava11-amd64 -Pcompile,dev</code></pre>
 </div>
 </div>
 <div class="paragraph">
