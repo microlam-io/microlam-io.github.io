@@ -7,4 +7,7 @@ categories:
       - title: Be Guided Through First Application
         url: /guides/getting-started
         description: Discover how to create your first Microlam application.
+      - title: AWS Serverless Guide
+        url: /guides/aws-serverless-guide
+        description: How to use AWS Services from your Microlam application.
          

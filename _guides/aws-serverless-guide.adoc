@@ -1,0 +1,774 @@
+= AWS Serverless Guide
+
+include::./attributes.adoc[]
+
+:toc: macro
+:toclevels: 5
+:doctype: book
+:icons: font
+:docinfo1:
+
+:numbered:
+:sectnums:
+:sectnumlevels: 5
+
+
+Learn how to use AWS Serverless services in your Microlam app.
+
+This guide covers:
+
+* Bootstrapping an application
+* Testing the application
+* Packaging of the application
+* Deploying to AWS
+
+== Prerequisites
+
+To complete this guide, you need:
+
+* from 15 minutes to 1 hour
+* an IDE
+* JDK 11+ installed with `JAVA_HOME` configured appropriately
+* Apache Maven {maven-version}
+* https://docs.docker.com/get-docker/[Docker]
+* https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html[AWS CLI]
+* https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html[AWS CDK CLI]
+
+[TIP]
+.Verify Maven is using the Java you expect
+====
+If you have multiple JDK's installed it is not certain Maven will pick up the expected java
+and you could end up with unexpected results.
+You can verify which JDK Maven uses by running `mvn --version`. 
+====
+
+== Using AWS profiles
+
+=== Configuring your AWS Profiles
+
+Using AWS profiles allow you to switch very easily between your differents AWS Accounts.
+
+For example, imagine you are use 2 different accounts inside your company to access dev and prod environment, you will create 2 profiles:
+
+* `companydev` : for the dev environment
+* `companyprod` : for the prod environment
+
+You can access https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/keys-profiles-credentials.html[AWS official documentation] for reference or simply follow this guide:
+
+All these profiles must be defined in the file `~/.aws/credentials` like this:
+
+[source,text,subs=attributes+]
+----
+[default]
+aws_access_key_id = YOUR_ACCESS_KEY_ID
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
+
+[companydev]
+aws_access_key_id = YOUR_ACCESS_KEY_ID_DEV
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_DEV
+
+[companyprod]
+aws_access_key_id = YOUR_ACCESS_KEY_ID_PROD
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_PROD
+----
+
+While you put the default region for each profile in the file `~/.aws/config` like this:
+
+[source,text,subs=attributes+]
+----
+[default]
+region=us-east-2
+
+[profile companydev]
+region=eu-west-1
+
+[profile companyprod]
+region=eu-west-1
+----
+
+
+Then I suggest to test these profiles from your CLI, listing s3 files for each profile:
+
+* For the `default` profile:
+
+[source,bash,subs=attributes+]
+----
+aws s3 ls
+----
+
+
+* For the profile `companydev`:
+
+[source,bash,subs=attributes+]
+----
+aws s3 ls --profile companydev
+----
+
+
+* For the profile `companyprod`:
+
+[source,bash,subs=attributes+]
+----
+aws s3 ls --profile companyprod
+----
+
+If the output from these commands is the one you expect from each account, it means you successfully configured your profiles.
+
+
+=== From the Java code (devops)
+
+When you create a new Microlam Project from the maven archetype microlam-lambda-quickstart you will find a class Aws in `src/test/java`:
+
+[source,java,subs=attributes+]
+----
+package xxx.aws.devops;
+
+import io.microlam.aws.auth.AwsProfileRegionClientConfigurator;
+import software.amazon.awssdk.regions.Region;
+
+public class Aws {
+	
+	public final static String PROFILE = "companydev";
+	public final static String REGION = "eu-west-1";
+	public final static String DEPLOYMENT_BUCKET = "companydev-deployment";
+	
+	public static void configure() {
+	   	AwsProfileRegionClientConfigurator.setProfile(PROFILE);
+	 	AwsProfileRegionClientConfigurator.setRegion(Region.of(REGION));
+	}
+
+}
+----
+
+As you see, this code is using the class `AwsProfileRegionClientConfigurator` available from dependency:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>io.microlam</groupId>
+    <artifactId>microlam-aws-auth</artifactId>
+    <scope>test</scope>
+</dependency>
+----
+
+[TIP]
+.Remove the scope test
+====
+You may need to remove the scope test in case you are using the `AwsProfileRegionClientConfigurator` inside `src/main/java`.
+====
+
+Then you will be able to use this configuration in your tests with `Aws.configure()`, like it is done in provided test in class `UploadAndUpdateLambda`:
+
+[source,java,subs=attributes+]
+----
+package xxx.aws.devops;
+
+import java.io.File;
+
+import org.junit.Test;
+
+import io.microlam.aws.devops.LambdaUtils;
+import io.microlam.aws.devops.S3Utils;
+
+public class UploadAndUpdateLambda {
+
+	@Test
+	public void process() {
+		Aws.configure();
+
+	 	File file = new File("target/xxxx-lambda-1.0-SNAPSHOT-aws-lambda.zip");
+	 	String bucket = Aws.DEPLOYMENT_BUCKET;
+	 	String s3key = S3Utils.uploadFileToS3(file, bucket, 20);
+	 	
+	 	LambdaUtils.updateLambdaCode(new String[] {"XXXLambda"}, bucket, s3key);
+	}
+}
+----
+
+=== From the Java Lambda code
+
+When the Lambda code is deployed to a lambda, the credentials and the region must not be precised as it is deduced from the AWS Region where you have deployed your Lambda.
+
+Nevertheless, it may be very useful to be able to run your Lambda code on your development machine targeting different profiles while your Lambda code stay independent from the profile/region.
+
+The solution is to use this way of instanciating the AWS Clients:
+
+* For S3 
+[source,java,subs=attributes+]
+----
+S3Client s3Client = AwsProfileRegionClientConfigurator.getInstance().configure(S3Client.builder()).build();
+----
+
+* For DynamoDB
+[source,java,subs=attributes+]
+----
+DynamoDbClient dynamoDbClient = AwsProfileRegionClientConfigurator.getInstance().configure(DynamoDbClient.builder()).build();
+----
+
+
+
+[TIP]
+.All the AWS Clients are Threadsafe
+====
+As the creation of an AWS client has a cost, it is very useful to create your AWS Clients as singletons (static). In that case, you need to verify that `Aws.configure()` will occur before the initialization of your AWS clients, for example in a static block before the static fields.
+====
+
+=== For the AWS SAM CLI
+
+At the root of the project, you can find the AWS SAM config file: `samconfig.toml`
+
+Inside the file, you can set the profile and the region:
+[source,txt,subs=attributes+]
+----
+profile = "companydev"
+region = "eu-west-1"
+----
+
+
+=== For the AWS CDK CLI
+
+At the root of the project, you can find the AWS CDK config file: `cdk.json`
+
+Inside the file, you can set the profile:
+[source,json,subs=attributes+]
+----
+{
+  "app": "mvn -e -q compile test -Dtest=xxx.devops.cdk.CreateApp",
+  "watch": {
+    "include": [
+       "**"
+    ],
+    "exclude": [
+       "README.md",
+       "cdk*.json",
+       "target",
+       "pom.xml"
+     ]
+  },
+  "context": {
+    "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": true,
+    "@aws-cdk/core:stackRelativeExports": true,
+    "@aws-cdk/aws-rds:lowercaseDbIdentifier": true,
+    "@aws-cdk/aws-lambda:recognizeVersionProps": true,
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": true,
+    "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
+    "@aws-cdk/core:target-partitions": [
+      "aws",
+      "aws-cn"
+    ]
+  },
+  "profile": "companydev"
+}
+----
+
+
+=== From the AWS CDK code
+
+The AWS CDK code is using the `Environment` class, configured with the account_id and the region.
+
+Microlam is providing the method `StsUtils.getAccountId()` that gets the AWS `account_id` from the current configured profile (with `Aws.configure()`):
+
+[source,java,subs=attributes+]
+----
+Aws.configure();
+String account_id = StsUtils.getAccountId();
+
+Environment env = Environment.builder()
+		.account(account_id)
+		.region(Aws.REGION)
+		.build();
+----
+
+See complete code in Class `xxx.devops.cdk.CreateApp` in `src/test/java`.
+
+== Using Microlam Parameters for AWS
+
+Most of our applications depends on secrets or parameters you prefer to keep externally from your code.
+AWS is providing a service for that (System Manager / Parameter Store) you can leverage easily with Microlam. 
+
+=== Maven configuration
+
+The Microlam Parameters for AWS library is provided by this maven dependency:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>io.microlam</groupId>
+    <artifactId>microlam-params-aws</artifactId>
+</dependency>
+----
+
+=== Usage
+
+Your entry point is the `class` `ParameterStoreProviderPath` taking in its constructor as first argument the prefix of all the parameters.
+
+Example of usage:
+
+[source,java,subs=attributes+]
+----
+package tech.solusoft.params;
+
+import io.microlam.utils.params.AttributesProvider;
+import io.microlam.utils.params.aws.ParameterStoreProviderPath;
+
+public class SystemParameters {
+
+	public static final AttributesProvider ATTRIBUTES_PROVIDER = new ParameterStoreProviderPath("/PREFIX");
+
+	private static String PRIVATE_KEY = null;
+	private static String FIREBASE_SECRET = null;
+	
+	public static String FIREBASE_SECRET() {
+		if (FIREBASE_SECRET == null) {
+			FIREBASE_SECRET = ATTRIBUTES_PROVIDER.getStringValue("FIREBASE_SECRET", null);
+		}
+		return FIREBASE_SECRET;
+	}
+	
+	public static String PRIVATE_KEY() {
+		if (PRIVATE_KEY == null) {
+			PRIVATE_KEY = ATTRIBUTES_PROVIDER.getStringValue("PRIVATE_KEY", null);
+		}
+		return PRIVATE_KEY;
+	}
+
+}
+----
+
+
+When using prefix `"/PREFIX"` and retrieving value `"PRIVATE_KEY"` with method `getStringValue()` to access attribute whose full path is `"/PREFIX/PRIVATE_KEY"`.
+
+The second argument to method `getStringValue()` is a default value or null if you don't want to provide one.
+
+
+=== AWS needed permissions
+
+You need to provide access to the relevant used path:
+
+[source,json,subs=attributes+]
+----
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetParametersByPath",
+                "ssm:GetParameters",
+                "ssm:GetParameter"
+            ],
+            "Resource": [
+                "arn:aws:ssm:eu-west-1:*:parameter/*",
+                "arn:aws:ssm:eu-west-1:*:parameter/",
+                "arn:aws:ssm:eu-west-1:*:parameter/PREFIX/*",
+                "arn:aws:ssm:eu-west-1:*:parameter/PREFIX"
+            ]
+        }
+    ]
+}
+----
+
+== Using the Microlam DynamoDB Helper
+
+The Microlam DynamoDB Helper includes several features:
+
+* Create DynamoDB requests easily without the need of checking / escaping reserved key words
+* Construct programmatically ConditionExpression without concatenating String
+* Map DynamoDB objects to json and vice-versa.
+* Help you generate partial response from multiple queries by transmitting a lastkey String attribute to your client: Using the query pipeline.
+  
+=== Maven configuration
+
+The Microlam DynamoDB Helper is provided by this maven dependency:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>io.microlam</groupId>
+    <artifactId>microlam-dynamodb</artifactId>
+</dependency>
+----
+
+=== DynamoDB Client
+
+You can use a Singleton with lazy instanciation to give access to the client from anywhere in your project, for example, defining the class `AwsClients` :
+
+[source,java,subs=attributes+]
+----
+public abstract class AwsClients {
+
+	protected static DynamoDbClient dynamoDbClient = null;
+
+	public static DynamoDbClient getDynamoDbClient() {
+		if (dynamoDbClient == null) {
+			dynamoDbClient = createDynamoDbClient();
+		}
+		return dynamoDbClient;
+	}
+
+	private static DynamoDbClient createDynamoDbClient() {
+		return AwsProfileRegionClientConfigurator.getInstance().configure(DynamoDbClient.builder()).build();
+	}
+}
+----
+
+=== PutItem request
+
+Just use the helper builder `PutItemRequestBuilder` as in this example:
+
+[source,java,subs=attributes+]
+----
+
+import static io.microlam.dynamodb.expr.ConditionExpression.or;
+import static io.microlam.dynamodb.expr.ConditionExpression.attributeNotExists;
+
+public static boolean putItemExample() {
+	 	PutItemRequestBuilder request = PutItemRequestBuilder.builder()
+			.tableName("TEST_GENERIC")
+			.item(DynamoDBHelper.createAttributeValueMap("PK1", "pk1", "SK1", "sk1", "firstName", "Frank"))
+			.conditionExpression(or(attributeNotExists("PK1"), attributeNotExists("SK1")));
+	 	PutItemResponse response = AwsClients.putItem(request.build());
+		return response.sdkHttpResponse().isSuccessful();
+}
+----
+
+[TIP]
+.DynamoDBHelper & ConditionExpression & Operand are your main entry points in the library
+====
+* DynamoDBHelper let you create an AttributeValueMap or update it among other things. This is the main entry point in the API.
+* ConditionExpression will give you access to all the available functions.
+* Operand will give you access to all the available values
+====
+
+=== GetItem request
+
+Just use the helper builder `GetItemRequestBuilder` as in this example:
+
+[source,java,subs=attributes+]
+----
+public static String findConnectionId(String public_key) {
+	GetItemRequestBuilder builder = GetItemRequestBuilder.builder()
+			.tableName(TABLE_NAME)
+			.partitionKey("PK", public_key)
+			.sortKey("SK", Entity.REGISTRATION.name())
+			.projectionPaths("connection_id");
+	GetItemResponse response = AwsClients.getDynamoDbClient().getItem(builder.build());
+	if (response.hasItem()) {
+		return response.item().get("connection_id").s();
+	}
+	else {
+		return null;
+	}
+}
+----
+
+=== UpdateItem request
+
+Just use the helper builder `UpdateItemRequestBuilder` as in this example:
+
+[source,java,subs=attributes+]
+----
+public static void updatePseudo(String PK, String SK, String pseudo) {
+		long currentTime = System.currentTimeMillis();
+		UpdateItemRequest updateItemRequest = UpdateItemRequestBuilder.builder()
+			.tableName(TABLE_NAME)
+			.partitionKey("PK", PK)
+			.sortKey("SK", SK)
+			.updateExpression(UpdateExpression.setExpression(
+					AssignmentExpression.create("pseudo", Operand.stringValue(pseudo)),
+					AssignmentExpression.create("updating_date", Operand.numberValue(currentTime)),
+					AssignmentExpression.create("creation_date", Operand.ifNotExists("creation_date", Operand.numberValue(currentTime)))						
+				)).build();
+		UpdateItemResponse responce = AwsClients.getDynamoDbClient().updateItem(updateItemRequest);
+}
+----
+
+=== DeleteItem request
+
+Just use the helper builder `DeleteItemRequestBuilder` as in this example:
+
+[source,java,subs=attributes+]
+----
+public static void deleteEntity(String PK, Entity entity) {
+	DeleteItemRequestBuilder builder = DeleteItemRequestBuilder.builder()
+			.tableName(TABLE_NAME)
+			.partitionKey("PK", PK)
+			.sortKey("SK", entity.name());
+	DeleteItemResponse response = AwsClients.getDynamoDbClient().deleteItem(builder.build());
+}
+----
+
+=== Query request
+
+Just use the helper builder `QueryRequestBuilderBuilder` as in this example:
+
+[source,java,subs=attributes+]
+----
+public static Map<String,AttributeValue> findUserReport(String report_id) {
+	QueryRequestBuilderBuilder builder = QueryRequestBuilderBuilder.builder()
+			.tableName(TABLE_NAME)
+			.indexName("PK2-SK2-index")
+			.keyConditionExpression(ConditionExpression.and(
+					ConditionExpression.comparison(Operand.attributePath("PK2"), ComparatorOperator.EQUAL, Operand.stringValue(report_id)), 
+					ConditionExpression.comparison(Operand.attributePath("SK2"), ComparatorOperator.EQUAL, Operand.stringValue(Entity.USER_REPORT.name()))));
+	QueryResponse response = AwsClients.getDynamoDbClient().query(builder.build().build());
+	if (response.hasItems() && response.items().size() > 0) {
+		return response.items().get(0);
+	}
+	else {
+		return null;
+	}
+}
+----
+
+=== Scan request
+
+Just use the helper builder `ScanRequestBuilderBuilder` as in this example:
+
+[source,java,subs=attributes+]
+----
+public void testScanRequest() {
+	ScanRequest.Builder requestBuilder = ScanRequestBuilderBuilder.builder()
+		.tableName("TEST_GENERIC")
+		.indexName("indexName")
+		.filterExpression(ConditionExpression.attributeExists("email"))
+		.limit(10)
+		.returnConsumedCapacity(ReturnConsumedCapacity.INDEXES)
+		.projectionPaths("email", "PK1", "SK1")
+		.build();
+	
+	ScanResponse response;
+	do {
+		response = AwsClients.getDynamoDbClient().scan(requestBuilder.build());
+		for(Map<String, AttributeValue> item: response.items()) {
+			System.out.println(item);
+		}
+		requestBuilder.exclusiveStartKey(response.lastEvaluatedKey());
+	}
+	while (! response.lastEvaluatedKey().isEmpty()) ;
+}
+----
+
+=== Using the request pipeline
+
+The Request pipeline allows you to execute several requests in order and to retrieve a given max number items and gives you a 
+String token to continue the requests where you left of.
+
+You may include several `QueryRequest` and `ScanRequest` in the `RequestPipeline`.
+
+The `BasicRequestPipeline` constructor takes 2 parameters:
+
+* The DynamoDb client
+* A list of  `GenericRequestBuilder`
+
+Where a `GenericRequestBuilder` may be of 2 sort:
+
+* `QueryGenericRequestBuilder` for encapsulating a query name and a `QueryRequest.Builder`
+* `ScanGenericRequestBuilder` for encapsulating a query name and a `ScanRequest.Builder`
+
+On the third argument of `QueryGenericRequestBuilder` or `ScanGenericRequestBuilder` constructor you need to provide the 
+List of attibute names used as primary `partitionKey` and `sortKey` of the table you query and also the 
+eventual `partitionKey` and `sortKey` of the index you query.
+
+When your `RequestPipeline` is built you can use it for:
+
+* Getting the number of items to process
+* Process the items
+
+Then you can process your `RequestPipeline` with an `ItemProcessor` and a limit as max items count (where -1 is used for no limit) and an eventual 
+`lastKeyString` that may be `null` for starting the Pipeline from the first available item.
+
+This is an example:
+
+[source,java,subs=attributes+]
+----
+QueryRequest.Builder queryBuilder1 = xxxx; // Build your query
+QueryGenericRequestBuilder query1 = new QueryGenericRequestBuilder("query1", queryBuilder1, "PK", "SK", "IN");
+
+ScanRequest.Builder scanRequest1 = xxxx; //Build your query
+ScanGenericRequestBuilder scan1 = new ScanGenericRequestBuilder("scan1", scanRequest1, "PK", "SK");
+
+List<GenericRequestBuilder> requests = new ArrayList<>();
+requests.add(query1);
+requests.add(scan1);
+BasicRequestPipeline basicRequestPipeline = new BasicRequestPipeline(client, requests);
+
+int limit = 50;
+String lastKey = null;
+
+//Get total number of items to process
+int totalNumberOfItems = basicRequestPipeline.count(-1, lastKey);
+System.out.println("totalNumberOfItems: " + totalNumberOfItems);
+
+//Process the items by pack of 50
+GenericPipelineResult result = basicRequestPipeline.process(new ItemProcessor() {
+	
+	@Override
+	public void process(String requestName, Map<String, AttributeValue> item) {
+		//Process the item coming from the request named 'requestName'
+		System.out.println(item);
+	}
+}, limit, lastKey);
+
+
+System.out.println("processCount: " + result.processCount);
+System.out.println("lastKey: " + result.lastKeyString);
+----
+
+As you can see, you get a `GenericPipelineResult` as a return value for the processing, where you can find:
+
+* the `processCount` where you can check the number of items returned to the `ItemProcessor`.
+* the `lastKeyString` giving you a String you can use to continue the processing.
+
+
+=== Json and DynamoDB
+
+The class `DynamoDBHelper` contains several `convert` methods you can use for converting from/to `Json` to/from `AttributeValue`.
+
+Note that there may be several possibilities for converting a Json List to a `DynamoDB` `AttributeValue` as you may convert it not only to a `DynamoDBType.List` but also to a 
+`DynamoDBType.StringSet`, `DynamoDBType.NumberSet` or `DynamoDBType.BinarySet`...
+
+That's why you may provide a `Json` metadata object to the `DynamoDBHelper.convert()` method containing the given `Map` of `JsonPath` `String` to the required `DynamoDBType` name:
+
+[source,json,subs=attributes+]
+----
+{
+	"$.example.test" : "StringSet"
+}
+----
+
+In this example the attribute `example.test` (attribute `test` inside attribute `example`) from the root of the `json` is mapped to the `DynamoDBType` type `StringSet`.
+
+You can also generate a `Json` metadata object from a given `AttributeValue` with the help of the method `DynamoDBHelper.metadata()`.
+
+
+== Microlam AWS Devops support
+
+Microlam is providing a small library with very useful functions for devops.
+Microlam archetype project is also already configured for using `AWS SAM` or `AWS CDK` (which is is recommended).
+
+=== Maven configuration
+
+The Microlam DynamoDB Helper is provided by this maven dependency:
+
+[source,xml,subs=attributes+]
+----
+<dependency>
+    <groupId>io.microlam</groupId>
+    <artifactId>microlam-dynamodb</artifactId>
+</dependency>
+----
+
+=== Usage
+
+There are 3 handy classes you can use:
+
+* `S3Utils` related to AWS S3 utilities
+* `LambdaUtils` related to AWS Lambda utilities
+* `StsUtils` related to AWS STS utilities (for now, giving you only access to your AWS account id)
+
+
+For example, see the generated class `UploadAndUpdateLambda`, allowing you to update your Lambdas from your AWS deployment zip:
+
+[source,java,subs=attributes+]
+----
+package tech.solusoft.xxx.devops;
+
+import java.io.File;
+
+import org.junit.Test;
+
+import io.microlam.aws.devops.LambdaUtils;
+import io.microlam.aws.devops.S3Utils;
+
+public class UploadAndUpdateLambda {
+
+	@Test
+	public void process() {
+		Aws.configure();
+
+	 	File file = new File("target/xxx-0.0.1-SNAPSHOT-aws-lambda.zip");
+	 	String bucket = Aws.DEPLOYMENT_BUCKET;;
+	 	String s3key = S3Utils.uploadFileToS3(file, bucket, 20); //file.getName();//
+	 	
+	 	LambdaUtils.updateLambdaCode(new String[] {"XxxLambda"}, bucket, s3key);
+	}
+}
+----
+
+Note that the method `S3Utils.uploadFileToS3()` is using multi-threading (you configure the number of threads) for uploading your file.
+This should increase significally your productivity !
+
+=== AWS Native compilations tips
+
+The AWS java SDK 2.x is including an http client that you need to exclude in order to not depend on Apache client, Netty framework and another version of SLF4J which gives difficulties for GraalVM native compilation.
+Fortunately, AWS provide a way to configure the client you want to use and you can exclude the problematic libraries.
+
+This is how you should include an AWS Java SDK dependency:
+
+[source,java,subs=attributes+]
+----
+<dependency>
+	<groupId>software.amazon.awssdk</groupId>
+	<artifactId>dynamodb</artifactId>
+	<exclusions>
+		<exclusion>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>apache-client</artifactId>
+		</exclusion>
+		<exclusion>
+			<groupId>software.amazon.awssdk</groupId>
+			<artifactId>netty-nio-client</artifactId>
+		</exclusion>
+		<exclusion>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</exclusion>	        
+	</exclusions>
+</dependency>
+----
+
+Then you provide this as the default http client to use:
+
+[source,java,subs=attributes+]
+----
+<dependency>
+	<groupId>software.amazon.awssdk</groupId>
+	<artifactId>url-connection-client</artifactId>
+</dependency>
+----
+
+
+unfortunately, this client is not supporting all devops operations (s3 multi threads upload) 
+so you must also add this dependency for tests:
+
+[source,java,subs=attributes+]
+----
+<dependency>
+	<groupId>software.amazon.awssdk</groupId>
+	<artifactId>apache-client</artifactId>
+	<scope>test</scope>
+</dependency>
+----
+
+As a consequence when you run a test, the Java AWS SDK will find 2 possible implementations for an HTTP client and will complain with this exception:
+
+[source,txt,subs=attributes+]
+----
+software.amazon.awssdk.core.exception.SdkClientException: Multiple HTTP implementations were found on the classpath. To avoid non-deterministic loading implementations, please explicitly provide an HTTP client via the client builders, set the software.amazon.awssdk.http.service.impl system property with the FQCN of the HTTP service to use as the default, or remove all but one HTTP implementation from the classpath
+----
+
+Which you can solve by adding this parameter when running a test/devops code:
+[source,txt,subs=attributes+]
+----
+-Dsoftware.amazon.awssdk.http.service.impl=software.amazon.awssdk.http.apache.ApacheSdkHttpService
+----
+
+
+== Feedback
+
+Microlam is only beginning and needs your https://github.com/microlam-io/microlam/discussions[feedback] and your help to improve.
+
+If you have any questions or need some support, click https://microlam.io/support[here].
+

@@ -1,13 +1,13 @@
 :imagesdir: /guides/images
 
 :project-name: Microlam
-:microlam-version: 0.3.3
-:microlam-lambda-quickstart-version: 0.8.5
+:microlam-version: 0.4.0
+:microlam-lambda-quickstart-version: 0.9.0
 
 
 :maven-version: 3.8.1+
-:graalvm-version: 22.0.0.2
-:graalvm-flavor: 22.0.0.2-java11
+:graalvm-version: 22.1.0
+:graalvm-flavor: 22.1.0-java11
 
 
 :generated-dir: ../_generated-config/latest
