@@ -102,7 +102,7 @@
           <div class= "highlighter-rouge">
             <div class="highlight">
               <pre class="highlight"><code>
-mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.8.5
+mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.9.0
                  </code></pre>
             </div>
           </div>
@@ -128,7 +128,7 @@ mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=micr
           <div class= "highlighter-rouge">
             <div class="highlight">
               <pre class="highlight"><code>
-mvn clean install -Dnative=java11-amd64 -Pjava,config
+mvn clean install -Dnative=java11-amd64 -Pconfig
                  </code></pre>
             </div>
           </div>
@@ -162,7 +162,7 @@ mvn test -Dtest=[package].devops.LocalLambdaTests
           <div class= "highlighter-rouge">
             <div class="highlight">
               <pre class="highlight"><code>
-mvn install -Dnative=java11-amd64 -Pcompile,dev
+mvn clean install -Dnative=java11-amd64 -Pcompile,dev
                  </code></pre>
             </div>
           </div>
@@ -209,7 +209,7 @@ mvn docker:copy -Dnative=java11-amd64 -Pcompile
           <div class= "highlighter-rouge">
             <div class="highlight">
               <pre class="highlight"><code>
-mvn install -Dnative=java11-amd64 -Pcompile
+mvn clean install -Dnative=java11-amd64 -Pcompile
                  </code></pre>
             </div>
           </div>

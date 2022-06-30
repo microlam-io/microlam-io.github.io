@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html>
+
+
+
+
+
+<head>
+  <title>Microlam - AWS Serverless Guide</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="/assets/javascript/highlight.pack.js" type="text/javascript"></script>
+  <META HTTP-EQUIV='X-XSS-Protection' CONTENT="1; mode=block">
+  <META HTTP-EQUIV='X-Content-Type-Options' CONTENT="nosniff">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Microlam: AWS Serverless with Java">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@Microlam_io"> 
+  <meta name="twitter:creator" content="@Microlam_io">
+  <meta property="og:url" content="https://microlam.io/guides/aws-serverless-guide" />
+  <meta property="og:title" content="AWS Serverless Guide" />
+  <meta property="og:description" content="Microlam: AWS Serverless with Java" />
+  
+  <link rel="canonical" href="https://microlam.io/guides/aws-serverless-guide">
+  <link rel="shortcut icon" type="image/png" href="/favicon.ico" >
+  <link rel="stylesheet" href="/guides/stylesheet/config.css" />
+  <link rel="stylesheet" href="/assets/css/main.css?2021-07-29" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+  <link rel="alternate" type="application/rss+xml"  href="/feed.xml" title="Microlam">
+  <script src="/assets/javascript/goan.js" type="text/javascript"></script>
+  <script src="/assets/javascript/hl.js" type="text/javascript"></script>
+</head>
+
+<body class="guides">
+  <div class="nav-wrapper">
+  <div class="grid-wrapper">
+    <div class="width-12-12">
+      <input type="checkbox" id="checkbox" />
+      <nav id="main-nav" class="main-nav">
+  <div class="container">
+    <div class="logo-wrapper">
+        <a href="/"><img src="/assets/images/microlam_logo_horizontal_rgb_439_reverse.png" class="project-logo" title="Microlam"></a>
+    </div>
+    <label class="nav-toggle" for="checkbox">
+      <i class="fa fa-bars"></i>
+    </label>
+    <ul id="menu" class="menu">
+      <li class="dropdown">
+        <span href="/about/">About <i class="fas fa-chevron-down"></i></span>
+        <ul class="submenu">
+          <li><a href="/about" class="">WHAT IS MICROLAM?</a></li>
+          <li><a href="/aws-serverless-first" class="">AWS SERVERLESS FIRST</a></li>
+        </ul>
+      </li>
+      <li class="dropdown">
+        <span href="/learn/">Learn <i class="fas fa-chevron-down"></i></span>
+        <ul class="submenu">
+          <li><a href="/get-started" class="">GET STARTED</a></li>
+          <li><a href="/guides" class="active">GUIDES</a></li>
+          </ul>
+      </li>
+      <li class="dropdown">
+        <span href="/learn/">Community <i class="fas fa-chevron-down"></i></span>
+        <ul class="submenu">
+          <li><a href="/support/" class="">SUPPORT</a></li>
+          <li><a href="/blog" class="">BLOG</a></li>
+          <li><a href="/discussion" class="">DISCUSSION</a></li>
+          <li><a href="/insights" class="">PODCAST</a></li>
+          <li><a href="/events" class="">EVENTS</a></li>
+          <li><a href="/newsletter" class="">NEWSLETTER</a></li>
+          </ul>
+      </li>
+      <li>
+        <a href="/get-started" class="button-cta secondary white">Get Started</a>
+      </li>
+    </ul>
+  </div>
+      </nav>
+    </div>
+  </div>
+</div>
+
+  <div class="content">
+    
+
+
+
+<div class="full-width-version-bg grey align-self">
+  <div class="grid-wrapper">
+    <div class="grid__item width-6-12">
+      <p class="returnlink"><i class="fas fa-angle-left"></i><a href="/guides/"> Back to Guides</a></p>
+    </div>
+    <div class="grid__item width-6-12 align-self-center text-right hide-mobile">
+      <label id="guide-version-label">Select Guide Version</label>
+      <select id="guide-version-dropdown">
+        
+      
+        
+        
+        
+        
+          
+        <option value="main" >Main - SNAPSHOT</option>
+        
+        
+      
+        
+        
+        
+        
+          
+        <option value="latest" selected>0.4.0 - Latest</option>
+        
+        
+      
+        
+        
+        
+        
+      
+    
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="grid-wrapper guide">
+  <div class="grid__item width-12-12 width-12-12-mobile">
+    <h1 class="text-caps">AWS Serverless Guide </h1>
+  </div>
+  <div class="width-12-12">
+    <div class="hide-mobile toc"><ul class="sectlevel1">
+<li><a href="#prerequisites">1. Prerequisites</a></li>
+<li><a href="#using-aws-profiles">2. Using AWS profiles</a>
+<ul class="sectlevel2">
+<li><a href="#configuring-your-aws-profiles">2.1. Configuring your AWS Profiles</a></li>
+<li><a href="#from-the-java-code-devops">2.2. From the Java code (devops)</a></li>
+<li><a href="#from-the-java-lambda-code">2.3. From the Java Lambda code</a></li>
+<li><a href="#for-the-aws-sam-cli">2.4. For the AWS SAM CLI</a></li>
+<li><a href="#for-the-aws-cdk-cli">2.5. For the AWS CDK CLI</a></li>
+<li><a href="#from-the-aws-cdk-code">2.6. From the AWS CDK code</a></li>
+</ul>
+</li>
+<li><a href="#using-microlam-parameters-for-aws">3. Using Microlam Parameters for AWS</a>
+<ul class="sectlevel2">
+<li><a href="#maven-configuration">3.1. Maven configuration</a></li>
+<li><a href="#usage">3.2. Usage</a></li>
+<li><a href="#aws-needed-permissions">3.3. AWS needed permissions</a></li>
+</ul>
+</li>
+<li><a href="#using-the-microlam-dynamodb-helper">4. Using the Microlam DynamoDB Helper</a>
+<ul class="sectlevel2">
+<li><a href="#maven-configuration-2">4.1. Maven configuration</a></li>
+<li><a href="#dynamodb-client">4.2. DynamoDB Client</a></li>
+<li><a href="#putitem-request">4.3. PutItem request</a></li>
+<li><a href="#getitem-request">4.4. GetItem request</a></li>
+<li><a href="#updateitem-request">4.5. UpdateItem request</a></li>
+<li><a href="#deleteitem-request">4.6. DeleteItem request</a></li>
+<li><a href="#query-request">4.7. Query request</a></li>
+<li><a href="#scan-request">4.8. Scan request</a></li>
+<li><a href="#using-the-request-pipeline">4.9. Using the request pipeline</a></li>
+<li><a href="#json-and-dynamodb">4.10. Json and DynamoDB</a></li>
+</ul>
+</li>
+<li><a href="#microlam-aws-devops-support">5. Microlam AWS Devops support</a>
+<ul class="sectlevel2">
+<li><a href="#maven-configuration-3">5.1. Maven configuration</a></li>
+<li><a href="#usage-2">5.2. Usage</a></li>
+<li><a href="#aws-native-compilations-tips">5.3. AWS Native compilations tips</a></li>
+</ul>
+</li>
+<li><a href="#feedback">6. Feedback</a></li>
+</ul></div>
+    <div>
+      <div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>Learn how to use AWS Serverless services in your Microlam app.</p>
+</div>
+<div class="paragraph">
+<p>This guide covers:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Bootstrapping an application</p>
+</li>
+<li>
+<p>Testing the application</p>
+</li>
+<li>
+<p>Packaging of the application</p>
+</li>
+<li>
+<p>Deploying to AWS</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="prerequisites"><a class="anchor" href="#prerequisites"></a>1. Prerequisites</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>To complete this guide, you need:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>from 15 minutes to 1 hour</p>
+</li>
+<li>
+<p>an IDE</p>
+</li>
+<li>
+<p>JDK 11+ installed with <code>JAVA_HOME</code> configured appropriately</p>
+</li>
+<li>
+<p>Apache Maven 3.8.1+</p>
+</li>
+<li>
+<p><a href="https://docs.docker.com/get-docker/">Docker</a></p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a></p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html">AWS CDK CLI</a></p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Verify Maven is using the Java you expect</div>
+<div class="paragraph">
+<p>If you have multiple JDK&#8217;s installed it is not certain Maven will pick up the expected java
+and you could end up with unexpected results.
+You can verify which JDK Maven uses by running <code>mvn --version</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-aws-profiles"><a class="anchor" href="#using-aws-profiles"></a>2. Using AWS profiles</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="configuring-your-aws-profiles"><a class="anchor" href="#configuring-your-aws-profiles"></a>2.1. Configuring your AWS Profiles</h3>
+<div class="paragraph">
+<p>Using AWS profiles allow you to switch very easily between your differents AWS Accounts.</p>
+</div>
+<div class="paragraph">
+<p>For example, imagine you are use 2 different accounts inside your company to access dev and prod environment, you will create 2 profiles:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>companydev</code> : for the dev environment</p>
+</li>
+<li>
+<p><code>companyprod</code> : for the prod environment</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>You can access <a href="https://docs.aws.amazon.com/toolkit-for-visual-studio/latest/user-guide/keys-profiles-credentials.html">AWS official documentation</a> for reference or simply follow this guide:</p>
+</div>
+<div class="paragraph">
+<p>All these profiles must be defined in the file <code>~/.aws/credentials</code> like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">[default]
+aws_access_key_id = YOUR_ACCESS_KEY_ID
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
+
+[companydev]
+aws_access_key_id = YOUR_ACCESS_KEY_ID_DEV
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_DEV
+
+[companyprod]
+aws_access_key_id = YOUR_ACCESS_KEY_ID_PROD
+aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_PROD</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>While you put the default region for each profile in the file <code>~/.aws/config</code> like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">[default]
+region=us-east-2
+
+[profile companydev]
+region=eu-west-1
+
+[profile companyprod]
+region=eu-west-1</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then I suggest to test these profiles from your CLI, listing s3 files for each profile:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For the <code>default</code> profile:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">aws s3 ls</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For the profile <code>companydev</code>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">aws s3 ls --profile companydev</code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For the profile <code>companyprod</code>:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">aws s3 ls --profile companyprod</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the output from these commands is the one you expect from each account, it means you successfully configured your profiles.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="from-the-java-code-devops"><a class="anchor" href="#from-the-java-code-devops"></a>2.2. From the Java code (devops)</h3>
+<div class="paragraph">
+<p>When you create a new Microlam Project from the maven archetype microlam-lambda-quickstart you will find a class Aws in <code>src/test/java</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package xxx.aws.devops;
+
+import io.microlam.aws.auth.AwsProfileRegionClientConfigurator;
+import software.amazon.awssdk.regions.Region;
+
+public class Aws {
+
+	public final static String PROFILE = "companydev";
+	public final static String REGION = "eu-west-1";
+	public final static String DEPLOYMENT_BUCKET = "companydev-deployment";
+
+	public static void configure() {
+	   	AwsProfileRegionClientConfigurator.setProfile(PROFILE);
+	 	AwsProfileRegionClientConfigurator.setRegion(Region.of(REGION));
+	}
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you see, this code is using the class <code>AwsProfileRegionClientConfigurator</code> available from dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.microlam&lt;/groupId&gt;
+    &lt;artifactId&gt;microlam-aws-auth&lt;/artifactId&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Remove the scope test</div>
+<div class="paragraph">
+<p>You may need to remove the scope test in case you are using the <code>AwsProfileRegionClientConfigurator</code> inside <code>src/main/java</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Then you will be able to use this configuration in your tests with <code>Aws.configure()</code>, like it is done in provided test in class <code>UploadAndUpdateLambda</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package xxx.aws.devops;
+
+import java.io.File;
+
+import org.junit.Test;
+
+import io.microlam.aws.devops.LambdaUtils;
+import io.microlam.aws.devops.S3Utils;
+
+public class UploadAndUpdateLambda {
+
+	@Test
+	public void process() {
+		Aws.configure();
+
+	 	File file = new File("target/xxxx-lambda-1.0-SNAPSHOT-aws-lambda.zip");
+	 	String bucket = Aws.DEPLOYMENT_BUCKET;
+	 	String s3key = S3Utils.uploadFileToS3(file, bucket, 20);
+
+	 	LambdaUtils.updateLambdaCode(new String[] {"XXXLambda"}, bucket, s3key);
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="from-the-java-lambda-code"><a class="anchor" href="#from-the-java-lambda-code"></a>2.3. From the Java Lambda code</h3>
+<div class="paragraph">
+<p>When the Lambda code is deployed to a lambda, the credentials and the region must not be precised as it is deduced from the AWS Region where you have deployed your Lambda.</p>
+</div>
+<div class="paragraph">
+<p>Nevertheless, it may be very useful to be able to run your Lambda code on your development machine targeting different profiles while your Lambda code stay independent from the profile/region.</p>
+</div>
+<div class="paragraph">
+<p>The solution is to use this way of instanciating the AWS Clients:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For S3</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>S3Client s3Client = AwsProfileRegionClientConfigurator.getInstance().configure(S3Client.builder()).build();</pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For DynamoDB</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>DynamoDbClient dynamoDbClient = AwsProfileRegionClientConfigurator.getInstance().configure(DynamoDbClient.builder()).build();</pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">All the AWS Clients are Threadsafe</div>
+<div class="paragraph">
+<p>As the creation of an AWS client has a cost, it is very useful to create your AWS Clients as singletons (static). In that case, you need to verify that <code>Aws.configure()</code> will occur before the initialization of your AWS clients, for example in a static block before the static fields.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="for-the-aws-sam-cli"><a class="anchor" href="#for-the-aws-sam-cli"></a>2.4. For the AWS SAM CLI</h3>
+<div class="paragraph">
+<p>At the root of the project, you can find the AWS SAM config file: <code>samconfig.toml</code></p>
+</div>
+<div class="paragraph">
+<p>Inside the file, you can set the profile and the region:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-txt hljs" data-lang="txt">profile = "companydev"
+region = "eu-west-1"</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="for-the-aws-cdk-cli"><a class="anchor" href="#for-the-aws-cdk-cli"></a>2.5. For the AWS CDK CLI</h3>
+<div class="paragraph">
+<p>At the root of the project, you can find the AWS CDK config file: <code>cdk.json</code></p>
+</div>
+<div class="paragraph">
+<p>Inside the file, you can set the profile:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+  "app": "mvn -e -q compile test -Dtest=xxx.devops.cdk.CreateApp",
+  "watch": {
+    "include": [
+       "**"
+    ],
+    "exclude": [
+       "README.md",
+       "cdk*.json",
+       "target",
+       "pom.xml"
+     ]
+  },
+  "context": {
+    "@aws-cdk/aws-apigateway:usagePlanKeyOrderInsensitiveId": true,
+    "@aws-cdk/core:stackRelativeExports": true,
+    "@aws-cdk/aws-rds:lowercaseDbIdentifier": true,
+    "@aws-cdk/aws-lambda:recognizeVersionProps": true,
+    "@aws-cdk/aws-cloudfront:defaultSecurityPolicyTLSv1.2_2021": true,
+    "@aws-cdk-containers/ecs-service-extensions:enableDefaultLogDriver": true,
+    "@aws-cdk/core:target-partitions": [
+      "aws",
+      "aws-cn"
+    ]
+  },
+  "profile": "companydev"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="from-the-aws-cdk-code"><a class="anchor" href="#from-the-aws-cdk-code"></a>2.6. From the AWS CDK code</h3>
+<div class="paragraph">
+<p>The AWS CDK code is using the <code>Environment</code> class, configured with the account_id and the region.</p>
+</div>
+<div class="paragraph">
+<p>Microlam is providing the method <code>StsUtils.getAccountId()</code> that gets the AWS <code>account_id</code> from the current configured profile (with <code>Aws.configure()</code>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">Aws.configure();
+String account_id = StsUtils.getAccountId();
+
+Environment env = Environment.builder()
+		.account(account_id)
+		.region(Aws.REGION)
+		.build();</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>See complete code in Class <code>xxx.devops.cdk.CreateApp</code> in <code>src/test/java</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-microlam-parameters-for-aws"><a class="anchor" href="#using-microlam-parameters-for-aws"></a>3. Using Microlam Parameters for AWS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Most of our applications depends on secrets or parameters you prefer to keep externally from your code.
+AWS is providing a service for that (System Manager / Parameter Store) you can leverage easily with Microlam.</p>
+</div>
+<div class="sect2">
+<h3 id="maven-configuration"><a class="anchor" href="#maven-configuration"></a>3.1. Maven configuration</h3>
+<div class="paragraph">
+<p>The Microlam Parameters for AWS library is provided by this maven dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.microlam&lt;/groupId&gt;
+    &lt;artifactId&gt;microlam-params-aws&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="usage"><a class="anchor" href="#usage"></a>3.2. Usage</h3>
+<div class="paragraph">
+<p>Your entry point is the <code>class</code> <code>ParameterStoreProviderPath</code> taking in its constructor as first argument the prefix of all the parameters.</p>
+</div>
+<div class="paragraph">
+<p>Example of usage:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package tech.solusoft.params;
+
+import io.microlam.utils.params.AttributesProvider;
+import io.microlam.utils.params.aws.ParameterStoreProviderPath;
+
+public class SystemParameters {
+
+	public static final AttributesProvider ATTRIBUTES_PROVIDER = new ParameterStoreProviderPath("/PREFIX");
+
+	private static String PRIVATE_KEY = null;
+	private static String FIREBASE_SECRET = null;
+
+	public static String FIREBASE_SECRET() {
+		if (FIREBASE_SECRET == null) {
+			FIREBASE_SECRET = ATTRIBUTES_PROVIDER.getStringValue("FIREBASE_SECRET", null);
+		}
+		return FIREBASE_SECRET;
+	}
+
+	public static String PRIVATE_KEY() {
+		if (PRIVATE_KEY == null) {
+			PRIVATE_KEY = ATTRIBUTES_PROVIDER.getStringValue("PRIVATE_KEY", null);
+		}
+		return PRIVATE_KEY;
+	}
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When using prefix <code>"/PREFIX"</code> and retrieving value <code>"PRIVATE_KEY"</code> with method <code>getStringValue()</code> to access attribute whose full path is <code>"/PREFIX/PRIVATE_KEY"</code>.</p>
+</div>
+<div class="paragraph">
+<p>The second argument to method <code>getStringValue()</code> is a default value or null if you don&#8217;t want to provide one.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="aws-needed-permissions"><a class="anchor" href="#aws-needed-permissions"></a>3.3. AWS needed permissions</h3>
+<div class="paragraph">
+<p>You need to provide access to the relevant used path:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "ssm:GetParametersByPath",
+                "ssm:GetParameters",
+                "ssm:GetParameter"
+            ],
+            "Resource": [
+                "arn:aws:ssm:eu-west-1:*:parameter/*",
+                "arn:aws:ssm:eu-west-1:*:parameter/",
+                "arn:aws:ssm:eu-west-1:*:parameter/PREFIX/*",
+                "arn:aws:ssm:eu-west-1:*:parameter/PREFIX"
+            ]
+        }
+    ]
+}</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="using-the-microlam-dynamodb-helper"><a class="anchor" href="#using-the-microlam-dynamodb-helper"></a>4. Using the Microlam DynamoDB Helper</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Microlam DynamoDB Helper includes several features:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Create DynamoDB requests easily without the need of checking / escaping reserved key words</p>
+</li>
+<li>
+<p>Construct programmatically ConditionExpression without concatenating String</p>
+</li>
+<li>
+<p>Map DynamoDB objects to json and vice-versa.</p>
+</li>
+<li>
+<p>Help you generate partial response from multiple queries by transmitting a lastkey String attribute to your client: Using the query pipeline.</p>
+</li>
+</ul>
+</div>
+<div class="sect2">
+<h3 id="maven-configuration-2"><a class="anchor" href="#maven-configuration-2"></a>4.1. Maven configuration</h3>
+<div class="paragraph">
+<p>The Microlam DynamoDB Helper is provided by this maven dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.microlam&lt;/groupId&gt;
+    &lt;artifactId&gt;microlam-dynamodb&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="dynamodb-client"><a class="anchor" href="#dynamodb-client"></a>4.2. DynamoDB Client</h3>
+<div class="paragraph">
+<p>You can use a Singleton with lazy instanciation to give access to the client from anywhere in your project, for example, defining the class <code>AwsClients</code> :</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public abstract class AwsClients {
+
+	protected static DynamoDbClient dynamoDbClient = null;
+
+	public static DynamoDbClient getDynamoDbClient() {
+		if (dynamoDbClient == null) {
+			dynamoDbClient = createDynamoDbClient();
+		}
+		return dynamoDbClient;
+	}
+
+	private static DynamoDbClient createDynamoDbClient() {
+		return AwsProfileRegionClientConfigurator.getInstance().configure(DynamoDbClient.builder()).build();
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="putitem-request"><a class="anchor" href="#putitem-request"></a>4.3. PutItem request</h3>
+<div class="paragraph">
+<p>Just use the helper builder <code>PutItemRequestBuilder</code> as in this example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">import static io.microlam.dynamodb.expr.ConditionExpression.or;
+import static io.microlam.dynamodb.expr.ConditionExpression.attributeNotExists;
+
+public static boolean putItemExample() {
+	 	PutItemRequestBuilder request = PutItemRequestBuilder.builder()
+			.tableName("TEST_GENERIC")
+			.item(DynamoDBHelper.createAttributeValueMap("PK1", "pk1", "SK1", "sk1", "firstName", "Frank"))
+			.conditionExpression(or(attributeNotExists("PK1"), attributeNotExists("SK1")));
+	 	PutItemResponse response = AwsClients.putItem(request.build());
+		return response.sdkHttpResponse().isSuccessful();
+}</code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">DynamoDBHelper &amp; ConditionExpression &amp; Operand are your main entry points in the library</div>
+<div class="ulist">
+<ul>
+<li>
+<p>DynamoDBHelper let you create an AttributeValueMap or update it among other things. This is the main entry point in the API.</p>
+</li>
+<li>
+<p>ConditionExpression will give you access to all the available functions.</p>
+</li>
+<li>
+<p>Operand will give you access to all the available values</p>
+</li>
+</ul>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="getitem-request"><a class="anchor" href="#getitem-request"></a>4.4. GetItem request</h3>
+<div class="paragraph">
+<p>Just use the helper builder <code>GetItemRequestBuilder</code> as in this example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public static String findConnectionId(String public_key) {
+	GetItemRequestBuilder builder = GetItemRequestBuilder.builder()
+			.tableName(TABLE_NAME)
+			.partitionKey("PK", public_key)
+			.sortKey("SK", Entity.REGISTRATION.name())
+			.projectionPaths("connection_id");
+	GetItemResponse response = AwsClients.getDynamoDbClient().getItem(builder.build());
+	if (response.hasItem()) {
+		return response.item().get("connection_id").s();
+	}
+	else {
+		return null;
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="updateitem-request"><a class="anchor" href="#updateitem-request"></a>4.5. UpdateItem request</h3>
+<div class="paragraph">
+<p>Just use the helper builder <code>UpdateItemRequestBuilder</code> as in this example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public static void updatePseudo(String PK, String SK, String pseudo) {
+		long currentTime = System.currentTimeMillis();
+		UpdateItemRequest updateItemRequest = UpdateItemRequestBuilder.builder()
+			.tableName(TABLE_NAME)
+			.partitionKey("PK", PK)
+			.sortKey("SK", SK)
+			.updateExpression(UpdateExpression.setExpression(
+					AssignmentExpression.create("pseudo", Operand.stringValue(pseudo)),
+					AssignmentExpression.create("updating_date", Operand.numberValue(currentTime)),
+					AssignmentExpression.create("creation_date", Operand.ifNotExists("creation_date", Operand.numberValue(currentTime)))
+				)).build();
+		UpdateItemResponse responce = AwsClients.getDynamoDbClient().updateItem(updateItemRequest);
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deleteitem-request"><a class="anchor" href="#deleteitem-request"></a>4.6. DeleteItem request</h3>
+<div class="paragraph">
+<p>Just use the helper builder <code>DeleteItemRequestBuilder</code> as in this example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public static void deleteEntity(String PK, Entity entity) {
+	DeleteItemRequestBuilder builder = DeleteItemRequestBuilder.builder()
+			.tableName(TABLE_NAME)
+			.partitionKey("PK", PK)
+			.sortKey("SK", entity.name());
+	DeleteItemResponse response = AwsClients.getDynamoDbClient().deleteItem(builder.build());
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="query-request"><a class="anchor" href="#query-request"></a>4.7. Query request</h3>
+<div class="paragraph">
+<p>Just use the helper builder <code>QueryRequestBuilderBuilder</code> as in this example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public static Map&lt;String,AttributeValue&gt; findUserReport(String report_id) {
+	QueryRequestBuilderBuilder builder = QueryRequestBuilderBuilder.builder()
+			.tableName(TABLE_NAME)
+			.indexName("PK2-SK2-index")
+			.keyConditionExpression(ConditionExpression.and(
+					ConditionExpression.comparison(Operand.attributePath("PK2"), ComparatorOperator.EQUAL, Operand.stringValue(report_id)),
+					ConditionExpression.comparison(Operand.attributePath("SK2"), ComparatorOperator.EQUAL, Operand.stringValue(Entity.USER_REPORT.name()))));
+	QueryResponse response = AwsClients.getDynamoDbClient().query(builder.build().build());
+	if (response.hasItems() &amp;&amp; response.items().size() &gt; 0) {
+		return response.items().get(0);
+	}
+	else {
+		return null;
+	}
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="scan-request"><a class="anchor" href="#scan-request"></a>4.8. Scan request</h3>
+<div class="paragraph">
+<p>Just use the helper builder <code>ScanRequestBuilderBuilder</code> as in this example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">public void testScanRequest() {
+	ScanRequest.Builder requestBuilder = ScanRequestBuilderBuilder.builder()
+		.tableName("TEST_GENERIC")
+		.indexName("indexName")
+		.filterExpression(ConditionExpression.attributeExists("email"))
+		.limit(10)
+		.returnConsumedCapacity(ReturnConsumedCapacity.INDEXES)
+		.projectionPaths("email", "PK1", "SK1")
+		.build();
+
+	ScanResponse response;
+	do {
+		response = AwsClients.getDynamoDbClient().scan(requestBuilder.build());
+		for(Map&lt;String, AttributeValue&gt; item: response.items()) {
+			System.out.println(item);
+		}
+		requestBuilder.exclusiveStartKey(response.lastEvaluatedKey());
+	}
+	while (! response.lastEvaluatedKey().isEmpty()) ;
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="using-the-request-pipeline"><a class="anchor" href="#using-the-request-pipeline"></a>4.9. Using the request pipeline</h3>
+<div class="paragraph">
+<p>The Request pipeline allows you to execute several requests in order and to retrieve a given max number items and gives you a
+String token to continue the requests where you left of.</p>
+</div>
+<div class="paragraph">
+<p>You may include several <code>QueryRequest</code> and <code>ScanRequest</code> in the <code>RequestPipeline</code>.</p>
+</div>
+<div class="paragraph">
+<p>The <code>BasicRequestPipeline</code> constructor takes 2 parameters:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The DynamoDb client</p>
+</li>
+<li>
+<p>A list of  <code>GenericRequestBuilder</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Where a <code>GenericRequestBuilder</code> may be of 2 sort:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>QueryGenericRequestBuilder</code> for encapsulating a query name and a <code>QueryRequest.Builder</code></p>
+</li>
+<li>
+<p><code>ScanGenericRequestBuilder</code> for encapsulating a query name and a <code>ScanRequest.Builder</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>On the third argument of <code>QueryGenericRequestBuilder</code> or <code>ScanGenericRequestBuilder</code> constructor you need to provide the
+List of attibute names used as primary <code>partitionKey</code> and <code>sortKey</code> of the table you query and also the
+eventual <code>partitionKey</code> and <code>sortKey</code> of the index you query.</p>
+</div>
+<div class="paragraph">
+<p>When your <code>RequestPipeline</code> is built you can use it for:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Getting the number of items to process</p>
+</li>
+<li>
+<p>Process the items</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Then you can process your <code>RequestPipeline</code> with an <code>ItemProcessor</code> and a limit as max items count (where -1 is used for no limit) and an eventual
+<code>lastKeyString</code> that may be <code>null</code> for starting the Pipeline from the first available item.</p>
+</div>
+<div class="paragraph">
+<p>This is an example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">QueryRequest.Builder queryBuilder1 = xxxx; // Build your query
+QueryGenericRequestBuilder query1 = new QueryGenericRequestBuilder("query1", queryBuilder1, "PK", "SK", "IN");
+
+ScanRequest.Builder scanRequest1 = xxxx; //Build your query
+ScanGenericRequestBuilder scan1 = new ScanGenericRequestBuilder("scan1", scanRequest1, "PK", "SK");
+
+List&lt;GenericRequestBuilder&gt; requests = new ArrayList&lt;&gt;();
+requests.add(query1);
+requests.add(scan1);
+BasicRequestPipeline basicRequestPipeline = new BasicRequestPipeline(client, requests);
+
+int limit = 50;
+String lastKey = null;
+
+//Get total number of items to process
+int totalNumberOfItems = basicRequestPipeline.count(-1, lastKey);
+System.out.println("totalNumberOfItems: " + totalNumberOfItems);
+
+//Process the items by pack of 50
+GenericPipelineResult result = basicRequestPipeline.process(new ItemProcessor() {
+
+	@Override
+	public void process(String requestName, Map&lt;String, AttributeValue&gt; item) {
+		//Process the item coming from the request named 'requestName'
+		System.out.println(item);
+	}
+}, limit, lastKey);
+
+
+System.out.println("processCount: " + result.processCount);
+System.out.println("lastKey: " + result.lastKeyString);</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see, you get a <code>GenericPipelineResult</code> as a return value for the processing, where you can find:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>the <code>processCount</code> where you can check the number of items returned to the <code>ItemProcessor</code>.</p>
+</li>
+<li>
+<p>the <code>lastKeyString</code> giving you a String you can use to continue the processing.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="json-and-dynamodb"><a class="anchor" href="#json-and-dynamodb"></a>4.10. Json and DynamoDB</h3>
+<div class="paragraph">
+<p>The class <code>DynamoDBHelper</code> contains several <code>convert</code> methods you can use for converting from/to <code>Json</code> to/from <code>AttributeValue</code>.</p>
+</div>
+<div class="paragraph">
+<p>Note that there may be several possibilities for converting a Json List to a <code>DynamoDB</code> <code>AttributeValue</code> as you may convert it not only to a <code>DynamoDBType.List</code> but also to a
+<code>DynamoDBType.StringSet</code>, <code>DynamoDBType.NumberSet</code> or <code>DynamoDBType.BinarySet</code>&#8230;&#8203;</p>
+</div>
+<div class="paragraph">
+<p>That&#8217;s why you may provide a <code>Json</code> metadata object to the <code>DynamoDBHelper.convert()</code> method containing the given <code>Map</code> of <code>JsonPath</code> <code>String</code> to the required <code>DynamoDBType</code> name:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">{
+	"$.example.test" : "StringSet"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In this example the attribute <code>example.test</code> (attribute <code>test</code> inside attribute <code>example</code>) from the root of the <code>json</code> is mapped to the <code>DynamoDBType</code> type <code>StringSet</code>.</p>
+</div>
+<div class="paragraph">
+<p>You can also generate a <code>Json</code> metadata object from a given <code>AttributeValue</code> with the help of the method <code>DynamoDBHelper.metadata()</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="microlam-aws-devops-support"><a class="anchor" href="#microlam-aws-devops-support"></a>5. Microlam AWS Devops support</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Microlam is providing a small library with very useful functions for devops.
+Microlam archetype project is also already configured for using <code>AWS SAM</code> or <code>AWS CDK</code> (which is is recommended).</p>
+</div>
+<div class="sect2">
+<h3 id="maven-configuration-3"><a class="anchor" href="#maven-configuration-3"></a>5.1. Maven configuration</h3>
+<div class="paragraph">
+<p>The Microlam DynamoDB Helper is provided by this maven dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;dependency&gt;
+    &lt;groupId&gt;io.microlam&lt;/groupId&gt;
+    &lt;artifactId&gt;microlam-dynamodb&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="usage-2"><a class="anchor" href="#usage-2"></a>5.2. Usage</h3>
+<div class="paragraph">
+<p>There are 3 handy classes you can use:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>S3Utils</code> related to AWS S3 utilities</p>
+</li>
+<li>
+<p><code>LambdaUtils</code> related to AWS Lambda utilities</p>
+</li>
+<li>
+<p><code>StsUtils</code> related to AWS STS utilities (for now, giving you only access to your AWS account id)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>For example, see the generated class <code>UploadAndUpdateLambda</code>, allowing you to update your Lambdas from your AWS deployment zip:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package tech.solusoft.xxx.devops;
+
+import java.io.File;
+
+import org.junit.Test;
+
+import io.microlam.aws.devops.LambdaUtils;
+import io.microlam.aws.devops.S3Utils;
+
+public class UploadAndUpdateLambda {
+
+	@Test
+	public void process() {
+		Aws.configure();
+
+	 	File file = new File("target/xxx-0.0.1-SNAPSHOT-aws-lambda.zip");
+	 	String bucket = Aws.DEPLOYMENT_BUCKET;;
+	 	String s3key = S3Utils.uploadFileToS3(file, bucket, 20); //file.getName();//
+
+	 	LambdaUtils.updateLambdaCode(new String[] {"XxxLambda"}, bucket, s3key);
+	}
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that the method <code>S3Utils.uploadFileToS3()</code> is using multi-threading (you configure the number of threads) for uploading your file.
+This should increase significally your productivity !</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="aws-native-compilations-tips"><a class="anchor" href="#aws-native-compilations-tips"></a>5.3. AWS Native compilations tips</h3>
+<div class="paragraph">
+<p>The AWS java SDK 2.x is including an http client that you need to exclude in order to not depend on Apache client, Netty framework and another version of SLF4J which gives difficulties for GraalVM native compilation.
+Fortunately, AWS provide a way to configure the client you want to use and you can exclude the problematic libraries.</p>
+</div>
+<div class="paragraph">
+<p>This is how you should include an AWS Java SDK dependency:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">&lt;dependency&gt;
+	&lt;groupId&gt;software.amazon.awssdk&lt;/groupId&gt;
+	&lt;artifactId&gt;dynamodb&lt;/artifactId&gt;
+	&lt;exclusions&gt;
+		&lt;exclusion&gt;
+			&lt;groupId&gt;software.amazon.awssdk&lt;/groupId&gt;
+			&lt;artifactId&gt;apache-client&lt;/artifactId&gt;
+		&lt;/exclusion&gt;
+		&lt;exclusion&gt;
+			&lt;groupId&gt;software.amazon.awssdk&lt;/groupId&gt;
+			&lt;artifactId&gt;netty-nio-client&lt;/artifactId&gt;
+		&lt;/exclusion&gt;
+		&lt;exclusion&gt;
+			&lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+			&lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+		&lt;/exclusion&gt;
+	&lt;/exclusions&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then you provide this as the default http client to use:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">&lt;dependency&gt;
+	&lt;groupId&gt;software.amazon.awssdk&lt;/groupId&gt;
+	&lt;artifactId&gt;url-connection-client&lt;/artifactId&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>unfortunately, this client is not supporting all devops operations (s3 multi threads upload)
+so you must also add this dependency for tests:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">&lt;dependency&gt;
+	&lt;groupId&gt;software.amazon.awssdk&lt;/groupId&gt;
+	&lt;artifactId&gt;apache-client&lt;/artifactId&gt;
+	&lt;scope&gt;test&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As a consequence when you run a test, the Java AWS SDK will find 2 possible implementations for an HTTP client and will complain with this exception:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-txt hljs" data-lang="txt">software.amazon.awssdk.core.exception.SdkClientException: Multiple HTTP implementations were found on the classpath. To avoid non-deterministic loading implementations, please explicitly provide an HTTP client via the client builders, set the software.amazon.awssdk.http.service.impl system property with the FQCN of the HTTP service to use as the default, or remove all but one HTTP implementation from the classpath</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Which you can solve by adding this parameter when running a test/devops code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-txt hljs" data-lang="txt">-Dsoftware.amazon.awssdk.http.service.impl=software.amazon.awssdk.http.apache.ApacheSdkHttpService</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="feedback"><a class="anchor" href="#feedback"></a>6. Feedback</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Microlam is only beginning and needs your <a href="https://github.com/microlam-io/microlam/discussions">feedback</a> and your help to improve.</p>
+</div>
+<div class="paragraph">
+<p>If you have any questions or need some support, click <a href="https://microlam.io/support">here</a>.</p>
+</div>
+</div>
+</div>
+    </div>
+  </div>
+</div>
+
+  </div>
+
+  <div class="content project-footer">
+  <div class="footer-section">
+    <div class="logo-wrapper">
+      <a href="/"><img src="/assets/images/microlam_logo_horizontal_rgb_439_reverse.png" class="project-logo" title="Microlam"></a>
+    </div>
+  </div>
+  <div class="grid-wrapper">
+    <p class="grid__item width-3-12">Microlam is open. All dependencies of this project are available under the <a href='https://github.com/microlam-io/microlam/blob/master/LICENSE.txt' target='_blank'>MIT License</a>, <a href='https://www.apache.org/licenses/LICENSE-2.0' target='_blank'>Apache Software License 2.0</a> or compatible license.<br /><br />This website was built with <a href='https://jekyllrb.com/' target='_blank'>Jekyll</a>, is hosted on <a href='https://pages.github.com/' target='_blank'>GitHub Pages</a> and is completely open source. If you want to make it better, <a href='https://github.com/microlam-io/microlam-site' target='_blank'>fork the website</a> and show us what you’ve got.</p>
+
+    
+      <div class="width-1-12 project-links">
+        <span>Navigation</span>
+        <ul class="footer-links">
+          
+            <li><a href="/">Home</a></li>
+          
+            <li><a href="/about">About</a></li>
+          
+            <li><a href="/blog">Blog</a></li>
+          
+            <li><a href="/insights">Podcast</a></li>
+          
+            <li><a href="/events">Events</a></li>
+          
+            <li><a href="/newsletter">Newsletter</a></li>
+          
+            <li><a href="/security">Security&nbsp;policy</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-1-12 project-links">
+        <span>Follow Us</span>
+        <ul class="footer-links">
+          
+            <li><a href="https://twitter.com/microlam_io">Twitter</a></li>
+          
+            <li><a href="https://github.com/microlam-io">GitHub</a></li>
+          
+        </ul>
+      </div>
+    
+      <div class="width-2-12 project-links">
+        <span>Get Help</span>
+        <ul class="footer-links">
+          
+            <li><a href="/support">Support</a></li>
+          
+            <li><a href="/guides">Guides</a></li>
+          
+            <li><a href="/faq">FAQ</a></li>
+          
+            <li><a href="/get-started">Get Started</a></li>
+          
+            <li><a href="https://stackoverflow.com/questions/tagged/microlam">Stack Overflow</a></li>
+          
+            <li><a href="https://github.com/microlam-io/microlam/discussions">Discussions</a></li>
+          
+            <li><a href="https://groups.google.com/forum/#!forum/microlam-io">Development mailing list</a></li>
+          
+        </ul>
+      </div>
+    
+
+    
+      <div class="width-4-12 more-links">
+        <span>Microlam is made of community projects</span>
+        <ul class="footer-links">
+          
+            <li><a href="https://www.graalvm.org/" target="_blank">GraalVM</a></li>
+          
+            <li><a href="https://github.com/fabric8io/docker-maven-plugin" target="_blank">fabric8io/docker-maven-plugin</a></li>
+          
+            <li><a href="https://netty.io" target="_blank">Netty</a></li>
+          
+            <li><a href="https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/home.html" target="_blank">AWS SDK for Java 2.x</a></li>
+          
+            <li><a href="https://maven.apache.org/" target="_blank">Maven</a></li>
+          
+        </ul>
+      </div>
+    
+  </div>
+</div>
+
+  <div class="content company-footer">
+  <div class="grid-wrapper">
+    <span class="licence">
+      <i class="fab fa-creative-commons"></i><i class="fab fa-creative-commons-by"></i> <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC by 3.0</a> (adapted from <a href="https://quarkus.io">Quarkus</a> site) | <a href="https://solusoft.tech//privacy.html">Privacy Policy</a>
+    </span>
+    <span class="company">
+      Sponsored by
+    </span>
+    <span class="company-logo">
+      <a href="https://solusoft.tech/" target="_blank"><img src="/assets/images/solusoft-logo-longueur-transparent.png"></a>
+    </span>
+  </div>
+</div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js" integrity="sha384-8gBf6Y4YYq7Jx97PIqmTwLPin4hxIzQw5aDmUg/DDhul9fFpbbLcLh3nTIIDJKhx" crossorigin="anonymous"></script>
+  <script type="text/javascript" src="/assets/javascript/mobile-nav.js"></script>
+  <script type="text/javascript" src="/assets/javascript/scroll-down.js"></script>
+  <script src="/assets/javascript/satellite.js" type="text/javascript"></script>
+  <script src="/guides/javascript/config.js" type="text/javascript"></script>
+  <script src="/assets/javascript/search-filter.js" type="text/javascript"></script>
+  <script src="/assets/javascript/guides-version-dropdown.js" type="text/javascript"></script>
+  <script src="/assets/javascript/back-to-top.js" type="text/javascript"></script>
+    <script src="/assets/javascript/clipboard.min.js" type="text/javascript"></script>
+  <script src="/assets/javascript/copy.js" type="text/javascript"></script>
+</body>
+
+</html>

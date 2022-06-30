@@ -5,7 +5,26 @@
         <title>Microlam</title>
         <link>https://microlam.io</link>
         <description>Microlam: AWS Serverless with Java</description>
-        <lastBuildDate>Thu, 30 Jun 2022 03:56:42 +0000</lastBuildDate>
+        <lastBuildDate>Thu, 30 Jun 2022 09:19:49 +0000</lastBuildDate>
+        
+        <item>
+            <title>Microlam 0.4.0 released - Support for DynamoDB &amp; Json-B &amp; Json-P</title>
+            <link>
+                https://microlam.io/blog/microlam-0-4-0-released/
+            </link>
+            <description>
+                Microlam is a Java micro-framework dedicated to AWS Serverless targeting simplicity, hackability and efficiency. This release is using GraalVM 22.1.0, adding support for DynamoDB, and use latest version of Json-P and Json-B specifications. Come Join Us We value your feedback a lot so please report bugs, ask for improvements&#8230;&#8203; Let&#8217;s...
+            </description>
+            <pubDate>Sun, 26 Jun 2022 00:00:00 +0000</pubDate>
+            <guid>
+                https://microlam.io/blog/microlam-0-4-0-released/
+            </guid>
+            
+            
+            
+            <author>Frank Afriat (https://twitter.com/microlam_io)</author>
+            
+        </item>
         
         <item>
             <title>Microlam 0.3.3 released - Support for GraalVM 22</title>
