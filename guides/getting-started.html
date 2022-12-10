@@ -110,7 +110,7 @@
         
         
           
-        <option value="latest" selected>0.4.0 - Latest</option>
+        <option value="latest" selected>0.5.1 - Latest</option>
         
         
       
@@ -222,6 +222,29 @@ You can verify which JDK Maven uses by running <code>mvn --version</code>.</p>
 </tr>
 </table>
 </div>
+<div class="paragraph">
+<p>Microlam is running <code>docker</code> using the <code>exec-maven-plugin</code> and the <code>maven-toolchains-plugin</code>.
+You need to configure your paths (so docker command can be found) in the <code>toolchains.xml</code> file in <code>~/.m2/toolchains.xml</code> like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-xml hljs" data-lang="xml">&lt;?xml version="1.0" encoding="UTF8"?&gt;
+&lt;toolchains&gt;
+    &lt;toolchain&gt;
+        &lt;type&gt;paths&lt;/type&gt;
+        &lt;provides&gt;
+            &lt;id&gt;binaries&lt;/id&gt;
+        &lt;/provides&gt;
+        &lt;configuration&gt;
+            &lt;!-- Defines the folders to search for binaries of the "paths" toolset --&gt;
+            &lt;paths&gt;
+                &lt;path&gt;/usr/local/bin&lt;/path&gt;
+            &lt;/paths&gt;
+        &lt;/configuration&gt;
+    &lt;/toolchain&gt;
+&lt;/toolchains&gt;</code></pre>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -284,7 +307,7 @@ You can verify which JDK Maven uses by running <code>mvn --version</code>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.9.1</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.9.2</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -390,8 +413,8 @@ Change the file <code>[package].devops.Aws</code> in <code>src/test/java</code> 
 </div>
 </div>
 <div class="paragraph">
-<p>You can see the <code>MultLambda</code> code is very simple (as <code>SumLambda</code>), using the business service as a singleton (line 15), implementing the interface <code>APIGatewayProxyLambda</code> only method <code>handleRequest</code>.
-Note the use of the library <a href="https://github.com/google/gson">google Gson</a> to convert from/to json to/from our POJOs (lines 24 and 31).</p>
+<p>You can see the <code>MultLambda</code> code is very simple (as <code>SumLambda</code>), using the business service as a singleton (line 16), implementing the interface <code>APIGatewayProxyLambda</code> only method <code>handleRequest</code>.
+Note the use of the library <a href="https://johnzon.apache.org/">Apache Johnzon</a> with Jsonb and Jsonp to convert from/to json to/from our POJOs (lines 21 and 26).</p>
 </div>
 <div class="paragraph">
 <p>As we said, we use <code>MicrolamLambda</code> as a proxy to redirect the call to <code>MultLambda</code> and <code>SumLambda</code> depending on the target resource <code>/mult</code> or <code>/sum</code>:</p>
@@ -468,11 +491,11 @@ In order to offer an uniform development experience (for linux, MacOS or Windows
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package -Pjava</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>This command build the Java deployment package in <code>target/</code> folder with the name <code>[xxx]-aws-lambda.jar</code>.</p>
+<p>This command build the Lambda Java deployment package in <code>target/</code> folder with the name <code>[xxx]-aws-lambda.jar</code>.</p>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -481,10 +504,9 @@ In order to offer an uniform development experience (for linux, MacOS or Windows
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-<div class="title">Which Java version to choose ?</div>
+<div class="title">Profile -Pjava</div>
 <div class="paragraph">
-<p>Currently AWS supports only <code>Java 8</code> or <code>Java 11</code> Runtimes, but it is possible to use a Custom Runtime to deploy also for <code>Java 17</code>. Microlam is providing the maven argument <code>-Djava17layer=axx64</code> for bringing the layer, see next TIP for detailed instructions and this project (<a href="https://github.com/microlam-io/lambda-java17-layer)">AWS Lambda Java 17 Runtime</a>.
-By default, Microlam is configured by default to use <code>Java 11</code>, but you can change this to <code>Java 17</code> by setting the property <code>release.version</code> to 17.</p>
+<p>Generating the Lambda Java deployment package is coming from the profile <code>-Pjava</code> which is now activated by default. You may disable it with <code>-P-java</code>.</p>
 </div>
 </td>
 </tr>
@@ -497,11 +519,27 @@ By default, Microlam is configured by default to use <code>Java 11</code>, but y
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-<div class="title">How to use Java 17 ?</div>
+<div class="title">Which Java version to choose ?</div>
 <div class="paragraph">
-<p>First modify the pom.xml property: <code>release.version</code> to 17.
-Then use the command <code>mvn package -Pjava -Djava17layer=axx64</code> where <code>axx64</code> is <code>amd64</code> or <code>arm64</code>. This brings the java 17 layer in your <code>target/</code> folder.
-You need to deploy the Java 17 Layer and the simplest way is to use the CDK (but using the AWS console is also possible), see and update as necessary the Class <code>[xxx].devops.cdk.CreateApp</code> (from <code>src/test</code> folder).</p>
+<p>Currently AWS supports only <code>Java 8</code> or <code>Java 11</code> Runtimes, but it is possible to use a Custom Runtime to deploy also for <code>Java 17</code> or <code>Java 19</code>. Microlam is providing the maven argument <code>-Djava17layer=axx64</code> or <code>-Djava19layer=axx64</code> for bringing the layer, see next TIP for detailed instructions and this project (<a href="https://github.com/microlam-io/lambda-java17-layer)">AWS Lambda Java 17 Runtime</a> or this one (<a href="https://github.com/microlam-io/lambda-java19-layer)">AWS Lambda Java 19 Runtime</a>.
+By default, Microlam is configured by default to use <code>Java 11</code>, but you can change this to <code>Java 17</code> or <code>Java 19</code> by setting the property <code>release.version</code> to 17 or 19.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">How to use Java 17 or Java 19?</div>
+<div class="paragraph">
+<p>First modify the pom.xml property: <code>release.version</code> to 17 or 19.
+Then use the command <code>mvn package -Djava17layer=axx64</code> (or <code>-Djava19layer=axx64</code>) where <code>axx64</code> is <code>amd64</code> or <code>arm64</code>. This brings the java 17/19 layer in your <code>target/</code> folder.
+You need to deploy the Java 17/19 Layer and the simplest way is to use the CDK (but using the AWS console is also possible), see and update as necessary the Class <code>[xxx].devops.cdk.CreateApp</code> (from <code>src/test</code> folder).</p>
 </div>
 </td>
 </tr>
@@ -529,7 +567,7 @@ You need to deploy the Java 17 Layer and the simplest way is to use the CDK (but
 <p>For an introduction to the subject of Native compilation for Java, you can refer to this <a href="https://frank-afriat.medium.com/lets-compile-your-aws-lambda-in-java-eafc24aae269">article</a>.</p>
 </div>
 <div class="paragraph">
-<p>The native build is depending on the java version (<code>java11</code> or <code>java17</code>) and the target architecture (<code>amd64</code> or <code>arm64</code>).</p>
+<p>The native build is depending on the java version (<code>java11</code>, <code>java17</code> or <code>java19</code>) and the target architecture (<code>amd64</code> or <code>arm64</code>).</p>
 </div>
 <div class="paragraph">
 <p>You need to provide this information in the maven command line using <code>-Dnative=javaXX-axx64</code> (by replacing XX and xx with the correct values).</p>
@@ -539,7 +577,7 @@ You need to deploy the Java 17 Layer and the simplest way is to use the CDK (but
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn install -Djava11-amd64 -Pcompile</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package -Djava11-amd64 -Pcompile</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -557,7 +595,7 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn install -Djava11-amd64 -Pconfig</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package -Djava11-amd64 -Pconfig</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -567,14 +605,28 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 <p>In our case, you can run the Junit Tests in the class in <code>[xxx].devops.LocalLambdaTests</code>.</p>
 </div>
 <div class="paragraph">
-<p>The generated configuration is updated (and merged) every 30s in the folder: <code>src/main/resources/META-INF/native-image/[groupId]/[artifactId]/</code>.</p>
+<p>The generated configuration is updated (and merged) every 30s in the folder: <code>target/[artifactId]-[version]-native-config/java11-amd64/function/config/</code>.</p>
 </div>
 <div class="paragraph">
-<p>Then it is a good idea, to compile and test locally the Native lambda which can be done with this command activating the dev mode:</p>
+<p>You can manually copy the files to the folder <code>src/main/resources/META-INF/native-image/[groupId]/[artifactId]/</code>.</p>
+</div>
+<div class="paragraph">
+<p>Then it is a good idea, to compile again the Native lambda which can be done with this command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn install -Djava11-amd64 -Pcompile,dev</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package -Djava11-amd64 -Pcompile</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will copy the Native deployment package to the <code>target</code> folder with the name <code>[xxx]-aws-lambda-native.zip</code>.</p>
+</div>
+<div class="paragraph">
+<p>Then test locally the result of your compilation:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn package -Djava11-amd64 -Prun</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -585,20 +637,6 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 </div>
 <div class="paragraph">
 <p>If everything is working as expected, you are ready to generate your deployment package.</p>
-</div>
-<div class="paragraph">
-<p>In another console, while the container is running, run this command:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn docker:copy -Dnative=java11-amd64 -Pcompile</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will copy the Native deployment package to the <code>target</code> folder with the name <code>[xxx]-aws-lambda-native.zip</code>.</p>
-</div>
-<div class="paragraph">
-<p>You can now stop the running container from the first console, with CTRL-C.</p>
 </div>
 </div>
 </div>
@@ -613,7 +651,7 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 </div>
 </div>
 <div class="paragraph">
-<p>This configuration will be merged automatically when using the <code>config</code> profile.</p>
+<p>See how to generate this configuration using the <code>config</code> profile.</p>
 </div>
 </div>
 <div class="sect2">

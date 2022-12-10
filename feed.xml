@@ -5,7 +5,26 @@
         <title>Microlam</title>
         <link>https://microlam.io</link>
         <description>Microlam: AWS Serverless with Java</description>
-        <lastBuildDate>Sat, 10 Dec 2022 03:12:22 +0000</lastBuildDate>
+        <lastBuildDate>Sat, 10 Dec 2022 22:40:33 +0000</lastBuildDate>
+        
+        <item>
+            <title>Microlam 0.5.1 released - Support for Java 19 !</title>
+            <link>
+                https://microlam.io/blog/microlam-0-5-1-released/
+            </link>
+            <description>
+                Microlam is a Java micro-framework dedicated to AWS Serverless targeting simplicity, hackability and efficiency: add support to Java 19 using GraalVM 22.3.0 add support for AWS SnapStart from the CDK and SAM for Java 11 using directly docker command and Dockerfiles more easy to use Come Join Us We value...
+            </description>
+            <pubDate>Sun, 26 Jun 2022 00:00:00 +0000</pubDate>
+            <guid>
+                https://microlam.io/blog/microlam-0-5-1-released/
+            </guid>
+            
+            
+            
+            <author>Frank Afriat (https://twitter.com/microlam_io)</author>
+            
+        </item>
         
         <item>
             <title>Microlam 0.4.0 released - Support for DynamoDB &amp; Json-B &amp; Json-P</title>
