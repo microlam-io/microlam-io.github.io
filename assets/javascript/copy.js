@@ -6,7 +6,7 @@ codes.forEach((code) => {
   
   let btn = document.createElement('button');
   btn.innerHTML = "&#xf0c5;";
-  btn.className = "btn-copy";
+  btn.className = "btn-copy fa";
   btn.setAttribute("data-clipboard-action", "copy");
   btn.setAttribute("data-clipboard-target", "#code" + countID);
   
