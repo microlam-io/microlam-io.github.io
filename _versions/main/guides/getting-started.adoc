@@ -41,6 +41,29 @@ and you could end up with unexpected results.
 You can verify which JDK Maven uses by running `mvn --version`. 
 ====
 
+Microlam is running `docker` using the `exec-maven-plugin` and the `maven-toolchains-plugin`.
+You need to configure your paths (so docker command can be found) in the `toolchains.xml` file in `~/.m2/toolchains.xml` like this:
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF8"?>
+<toolchains>
+    <toolchain>
+        <type>paths</type>
+        <provides>
+            <id>binaries</id>
+        </provides>
+        <configuration>
+            <!-- Defines the folders to search for binaries of the "paths" toolset -->
+            <paths>
+                <path>/usr/local/bin</path>
+            </paths>
+        </configuration>
+    </toolchain>
+</toolchains>
+----
+
+
 == Architecture
 
 In this guide, we create a straightforward application serving 2 endpoints `mult` and `sum` with a REST API:
@@ -126,8 +149,8 @@ Let's see the code for one of our Lambda (MultLambda):
 
 image::quickstart-mult-lambda-code.png[alt=MultLambda code, align=left]
 
-You can see the `MultLambda` code is very simple (as `SumLambda`), using the business service as a singleton (line 15), implementing the interface `APIGatewayProxyLambda` only method `handleRequest`.
-Note the use of the library https://github.com/google/gson[google Gson] to convert from/to json to/from our POJOs (lines 24 and 31).
+You can see the `MultLambda` code is very simple (as `SumLambda`), using the business service as a singleton (line 16), implementing the interface `APIGatewayProxyLambda` only method `handleRequest`.
+Note the use of the library https://johnzon.apache.org/[Apache Johnzon] with Jsonb and Jsonp to convert from/to json to/from our POJOs (lines 21 and 26).
 
 As we said, we use `MicrolamLambda` as a proxy to redirect the call to `MultLambda` and `SumLambda` depending on the target resource `/mult` or `/sum`:
 
@@ -173,25 +196,32 @@ Use simply the java maven profile:
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Pjava
+mvn package
 ----
 
-This command build the Java deployment package in `target/` folder with the name `[xxx]-aws-lambda.jar`.
+This command build the Lambda Java deployment package in `target/` folder with the name `[xxx]-aws-lambda.jar`.
+
+[TIP]
+.Profile -Pjava
+====
+Generating the Lambda Java deployment package is coming from the profile `-Pjava` which is now activated by default. You may disable it with `-P-java`.
+====
 
 [TIP]
 .Which Java version to choose ?
 ====
-Currently AWS supports only `Java 8` or `Java 11` Runtimes, but it is possible to use a Custom Runtime to deploy also for `Java 17`. Microlam is providing the maven argument `-Djava17layer=axx64` for bringing the layer, see next TIP for detailed instructions and this project (https://github.com/microlam-io/lambda-java17-layer)[AWS Lambda Java 17 Runtime].
-By default, Microlam is configured by default to use `Java 11`, but you can change this to `Java 17` by setting the property `release.version` to 17.
+Currently AWS supports only `Java 8` or `Java 11` Runtimes, but it is possible to use a Custom Runtime to deploy also for `Java 17` or `Java 19`. Microlam is providing the maven argument `-Djava17layer=axx64` or `-Djava19layer=axx64` for bringing the layer, see next TIP for detailed instructions and this project (https://github.com/microlam-io/lambda-java17-layer)[AWS Lambda Java 17 Runtime] or this one (https://github.com/microlam-io/lambda-java19-layer)[AWS Lambda Java 19 Runtime].
+By default, Microlam is configured by default to use `Java 11`, but you can change this to `Java 17` or `Java 19` by setting the property `release.version` to 17 or 19.
 ====
 
 [TIP]
-.How to use Java 17 ?
+.How to use Java 17 or Java 19?
 ====
-First modify the pom.xml property: `release.version` to 17.
-Then use the command `mvn package -Pjava -Djava17layer=axx64` where `axx64` is `amd64` or `arm64`. This brings the java 17 layer in your `target/` folder.
-You need to deploy the Java 17 Layer and the simplest way is to use the CDK (but using the AWS console is also possible), see and update as necessary the Class `[xxx].devops.cdk.CreateApp` (from `src/test` folder).
+First modify the pom.xml property: `release.version` to 17 or 19.
+Then use the command `mvn package -Djava17layer=axx64` (or `-Djava19layer=axx64`) where `axx64` is `amd64` or `arm64`. This brings the java 17/19 layer in your `target/` folder.
+You need to deploy the Java 17/19 Layer and the simplest way is to use the CDK (but using the AWS console is also possible), see and update as necessary the Class `[xxx].devops.cdk.CreateApp` (from `src/test` folder).
 ====
+
 
 [TIP]
 .Why we need the Java Lambda if we can compile to native ?
@@ -203,7 +233,7 @@ It is important to reduce the developement cycle develop-test-develop as much as
 
 For an introduction to the subject of Native compilation for Java, you can refer to this https://frank-afriat.medium.com/lets-compile-your-aws-lambda-in-java-eafc24aae269[article].
 
-The native build is depending on the java version (`java11` or `java17`) and the target architecture (`amd64` or `arm64`).
+The native build is depending on the java version (`java11`, `java17` or `java19`) and the target architecture (`amd64` or `arm64`).
 
 You need to provide this information in the maven command line using `-Dnative=javaXX-axx64` (by replacing XX and xx with the correct values).
 
@@ -211,7 +241,7 @@ Let's say your target is `java11-amd64`, if everything is ready, you just have t
 
 [source,bash,subs=attributes+]
 ----
-mvn clean install -Djava11-amd64 -Pcompile
+mvn package -Djava11-amd64 -Pcompile
 ----
 
 In case the build is successful, the Native deployment package is in the `target` folder with the name `[xxx]-aws-lambda-native.zip`.
@@ -225,20 +255,31 @@ This can be done by this maven command:
 
 [source,bash,subs=attributes+]
 ----
-mvn clean install -Djava11-amd64 -Pconfig
+mvn package -Djava11-amd64 -Pconfig
 ----
 
 At the end of the build, a container is running, letting you run your tests on it :
 
 In our case, you can run the Junit Tests in the class in `[xxx].devops.LocalLambdaTests`.
 
-The generated configuration is updated (and merged) every 30s in the folder: `src/main/resources/META-INF/native-image/[groupId]/[artifactId]/`.
+The generated configuration is updated (and merged) every 30s in the folder: `target/[artifactId]-[version]-native-config/java11-amd64/function/config/`.
 
-Then it is a good idea, to compile and test locally the Native lambda which can be done with this command activating the dev mode:
+You can manually copy the files to the folder `src/main/resources/META-INF/native-image/[groupId]/[artifactId]/`.
+
+Then it is a good idea, to compile again the Native lambda which can be done with this command:
 
 [source,bash,subs=attributes+]
 ----
-mvn clean install -Djava11-amd64 -Pcompile,dev
+mvn package -Djava11-amd64 -Pcompile
+----
+
+This will copy the Native deployment package to the `target` folder with the name `[xxx]-aws-lambda-native.zip`.
+
+Then test locally the result of your compilation:
+
+[source,bash,subs=attributes+]
+----
+mvn package -Djava11-amd64 -Prun
 ----
 
 At the end of the build, a container is running, letting you try your native lambda locally.
@@ -247,24 +288,13 @@ In our case, you can run again the Junit Tests in the class in `[xxx].devops.Loc
 
 If everything is working as expected, you are ready to generate your deployment package.
 
-In another console, while the container is running, run this command:
-
-[source,bash,subs=attributes+]
-----
-mvn docker:copy -Dnative=java11-amd64 -Pcompile
-----
-
-This will copy the Native deployment package to the `target` folder with the name `[xxx]-aws-lambda-native.zip`.
-
-You can now stop the running container from the first console, with CTRL-C.
-
 === The Native configuration
 
 It is found in the `src/main/resources` folder:
 
 image::quickstart-files-native-config.png[alt=Files in src/main/java, align=left]
 
-This configuration will be merged automatically when using the `config` profile.
+See how to generate this configuration using the `config` profile.
 
 === The Java code in src/test/java
 
