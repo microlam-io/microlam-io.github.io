@@ -2,11 +2,11 @@
 
 :project-name: Microlam
 :microlam-version: 999-SNAPSHOT
-:microlam-lambda-quickstart-version: 0.8.4
+:microlam-lambda-quickstart-version: 0.9.3
 
 :maven-version: 3.6.2+
-:graalvm-version: 22.0.0.2
-:graalvm-flavor: 22.0.0.2-java11
+:graalvm-version: 22.3.0
+:graalvm-flavor: 22.3.0-java11
 :surefire-version: 3.0.0-M5
 :restassured-version: 4.3.3
 

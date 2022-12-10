@@ -2,12 +2,12 @@
 
 :project-name: Microlam
 :microlam-version: 0.5.1
-:microlam-lambda-quickstart-version: 0.9.2
+:microlam-lambda-quickstart-version: 0.9.3
 
 
 :maven-version: 3.8.1+
-:graalvm-version: 22.2.0
-:graalvm-flavor: 22.2.0-java11
+:graalvm-version: 22.3.0
+:graalvm-flavor: 22.3.0-java11
 
 
 :generated-dir: ../_generated-config/latest
