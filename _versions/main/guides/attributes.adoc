@@ -2,7 +2,7 @@
 
 :project-name: Microlam
 :microlam-version: 999-SNAPSHOT
-:microlam-lambda-quickstart-version: 0.9.3
+:microlam-lambda-quickstart-version: 0.9.4
 
 :maven-version: 3.6.2+
 :graalvm-version: 22.3.0
