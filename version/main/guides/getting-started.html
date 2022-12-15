@@ -144,6 +144,7 @@
 <li><a href="#the-pom-xml">4.2. The pom.xml</a></li>
 <li><a href="#the-native-configuration">4.3. The Native configuration</a></li>
 <li><a href="#the-java-code-in-srctestjava">4.4. The Java code in src/test/java</a></li>
+<li><a href="#deploying-your-application-with-the-cdk">4.5. Deploying your Application with the CDK</a></li>
 </ul>
 </li>
 <li><a href="#logging">5. Logging</a></li>
@@ -676,6 +677,25 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 <p>In the <code>[package]</code> folder, you can find the Class LambdaTest, which show you how to test your Lambda code without testing the Lambda Machinery for Unit testing.</p>
 </li>
 </ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="deploying-your-application-with-the-cdk"><a class="anchor" href="#deploying-your-application-with-the-cdk"></a>4.5. Deploying your Application with the CDK</h3>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="title">Bootstrapping your project for the CDK</div>
+<div class="paragraph">
+<p>You need to bootstrap your project before using the CDK only the first time.
+For this, inside the project root folder, use the command: <code>cdk bootstrap</code></p>
+</div>
+</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>Using the AWS CDK is the recommended way to deploy your App and to maintain it during development.</p>
