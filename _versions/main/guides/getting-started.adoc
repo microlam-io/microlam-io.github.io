@@ -306,6 +306,15 @@ image::quickstart-files-src-test.png[alt=Files in src/main/java, align=left]
 * In the `[package].devops.cdk` folder, you can find the class `CreateApp` including all what is necessary to deploy the complete Application to AWS using AWS CDK.
 * In the `[package]` folder, you can find the Class LambdaTest, which show you how to test your Lambda code without testing the Lambda Machinery for Unit testing.
 
+=== Deploying your Application with the CDK
+
+[TIP]
+.Bootstrapping your project for the CDK
+====
+You need to bootstrap your project before using the CDK only the first time.
+For this, inside the project root folder, use the command: `cdk bootstrap` 
+====
+
 Using the AWS CDK is the recommended way to deploy your App and to maintain it during development.
 
 As you develop, modify `CreateApp` if necessary, for our example, you need to apply a few changes to set the function Runtime, Architecture and Code according to your needs, because by default it deploys the Java Lambda Package.
