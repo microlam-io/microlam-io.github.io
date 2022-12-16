@@ -241,7 +241,7 @@ Let's say your target is `java11-amd64`, if everything is ready, you just have t
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Djava11-amd64 -Pcompile
+mvn package -Dnative=java11-amd64 -Pcompile
 ----
 
 In case the build is successful, the Native deployment package is in the `target` folder with the name `[xxx]-aws-lambda-native.zip`.
@@ -255,7 +255,7 @@ This can be done by this maven command:
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Djava11-amd64 -Pconfig
+mvn package -Dnative=java11-amd64 -Pconfig
 ----
 
 At the end of the build, a container is running, letting you run your tests on it :
@@ -270,7 +270,7 @@ Then it is a good idea, to compile again the Native lambda which can be done wit
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Djava11-amd64 -Pcompile
+mvn package -Dnative=java11-amd64 -Pcompile
 ----
 
 This will copy the Native deployment package to the `target` folder with the name `[xxx]-aws-lambda-native.zip`.
@@ -279,7 +279,7 @@ Then test locally the result of your compilation:
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Djava11-amd64 -Prun
+mvn package -Dnative=java11-amd64 -Prun
 ----
 
 At the end of the build, a container is running, letting you try your native lambda locally.
