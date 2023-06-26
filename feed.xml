@@ -5,7 +5,26 @@
         <title>Microlam</title>
         <link>https://microlam.io</link>
         <description>Microlam: AWS Serverless with Java</description>
-        <lastBuildDate>Mon, 26 Jun 2023 03:29:03 +0000</lastBuildDate>
+        <lastBuildDate>Mon, 26 Jun 2023 10:12:44 +0000</lastBuildDate>
+        
+        <item>
+            <title>Microlam 0.5.3 released - Support Java 20 and Oracle GraalVM !</title>
+            <link>
+                https://microlam.io/blog/microlam-0-5-3-released/
+            </link>
+            <description>
+                Microlam is a Java micro-framework dedicated to AWS Serverless targeting simplicity, hackability and efficiency: include support for Java 8, Java 11, Java 17, Java 19 &amp; Java 20 using GraalVM from JDK 17 &amp; JDK 20 + Oracle GraalVM free for JAVA 17 &amp; JAVA 20 add support for AWS...
+            </description>
+            <pubDate>Sun, 26 Jun 2022 00:00:00 +0000</pubDate>
+            <guid>
+                https://microlam.io/blog/microlam-0-5-3-released/
+            </guid>
+            
+            
+            
+            <author>Frank Afriat (https://twitter.com/microlam_io)</author>
+            
+        </item>
         
         <item>
             <title>Microlam 0.5.1 released - Support for Java 19 !</title>

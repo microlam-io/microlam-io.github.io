@@ -95,14 +95,14 @@
     </div>
     <div class="width-10-12 width-12-12-m">
       <h3>Create the Getting Started Application</h3>
-      <p><u>Prerequisites</u>: JDK 11+, maven, <a href="https://docs.docker.com/get-docker/">docker</a>, <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a>, <a href="https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html">AWS CDK CLI</a></p>
+      <p><u>Prerequisites</u>: JDK 17+, maven, <a href="https://docs.docker.com/get-docker/">docker</a>, <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI</a>, <a href="https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html">AWS CDK CLI</a></p>
       <p>Run this script in your CLI:</p>
       <div class="grid-wrapper">
         <div class="width-6-12 width-12-12-m">
           <div class= "highlighter-rouge">
             <div class="highlight">
               <pre class="highlight"><code>
-mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.9.4
+mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.9.7
                  </code></pre>
             </div>
           </div>
@@ -268,7 +268,21 @@ cdk deploy
   </div>
   <div class="width-10-12 width-12-12-m">
     <h3>Deploy the Getting Started Application to AWS with the CDK</h3>
-    <p>Run this script in your CLI:</p>
+
+    <p>Run this script in your CLI (first time only):</p>
+    <div class="grid-wrapper">
+      <div class="width-6-12 width-12-12-m">
+        <div class= "highlighter-rouge">
+          <div class="highlight">
+            <pre class="highlight"><code>
+cdk bootstrap
+               </code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br/>
+    <p>And then</p>
     <div class="grid-wrapper">
       <div class="width-6-12 width-12-12-m">
         <div class= "highlighter-rouge">
