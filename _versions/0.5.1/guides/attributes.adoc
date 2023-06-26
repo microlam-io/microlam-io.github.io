@@ -1,16 +1,16 @@
-:imagesdir: /guides/images
+:imagesdir: ./images
 
 :project-name: Microlam
-:microlam-version: 0.5.3
-:microlam-lambda-quickstart-version: 0.9.7
+:microlam-version: 0.5.1
+:microlam-lambda-quickstart-version: 0.9.4
 
-
-:maven-version: 3.8.1+
+:maven-version: 3.6.2+
 :graalvm-version: 22.3.0
 :graalvm-flavor: 22.3.0-java11
+:surefire-version: 3.0.0-M5
+:restassured-version: 4.3.3
 
-
-:generated-dir: ../_generated-config/latest
+:generated-dir: ../../../_generated-config/main
 :microlam-home-url: https://microlam.io
 :microlam-site-getting-started: /get-started
 :microlam-writing-extensions-guide: /guides/writing-extensions

@@ -27,7 +27,7 @@ To complete this guide, you need:
 
 * from 15 minutes to 1 hour
 * an IDE
-* JDK 17+ installed with `JAVA_HOME` configured appropriately (The best is to use https://aws.amazon.com/corretto/[Amazon Corretto] build of OpenJDK)
+* JDK 11+ installed with `JAVA_HOME` configured appropriately
 * Apache Maven {maven-version}
 * https://docs.docker.com/get-docker/[Docker]
 * https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html[AWS CLI]
@@ -120,7 +120,7 @@ You will have to answer a few questions:
 .In case you provided incorrect values for `awsBucket`, `awsProfile` or `awsRegion`, no problem!
 ====
 It is very easy to set these values afterwards:
-Change the file `pom.xml` and `[package].devops.Aws` in `src/test/java` and eventually also `samconfig.toml` if you need to deploy with AWS SAM
+Change the file `[package].devops.Aws` in `src/test/java` and eventually also `samconfig.toml` if you need to deploy with AWS SAM
 ====
 
 == Discovering and working with the generated project
@@ -130,12 +130,12 @@ Change the file `pom.xml` and `[package].devops.Aws` in `src/test/java` and even
 Let't take a concrete example:
 
 * `groupId` = `tech.solusoft`
-* `artifactId` = `microlam-demo`
+* `artifactId` = `microlam-lambda`
 * `version` = `1.0-SNAPSHOT`
-* `package` = `tech.solusoft.demo`
-* `awsProfile` = `microlam`
+* `package` = `tech.solusoft.example`
+* `awsProfile` = `premiumpay`
 * `awsRegion` = `eu-west-1`
-* `lambdaName` = `MicrolamDemoLambda`
+* `lambdaName` = `MicrolamLambda`
 
 Once generated, import the project into your prefered IDE, this is what you will find in `src/main/java`:
 
@@ -144,22 +144,19 @@ image::quickstart-files-src-main.png[alt=Files in src/main/java, align=left]
 * In the `[package].bs` folder, you can find the business services (separating the business operations from the AWS code is a good thing).
 * In the `[package].lambda` folder you can see 3 classes providing the Lambda entry points, in fact, only one (here `MicrolamLambda`) will be deployed to AWS (One good reason for that is to ensure this lambda will be more hot). `MultLambda` and `SumLambda` are really doing the work.
 * In the `[package].body` folder you can see `LambdaBodyIn` and `LambdaBodyOut`, they are POJO representing what expect the lambda as Input and what to expect from its output.
-* In the `[package].params` folder you can find the class `SystemParameters` giving you access to System Manager/Parameters, there is only one parameter currently : `DEBUG`
-* In the `[package].log` folder you can find the class `LoggingConfiguration` where you can configure your Logging.
-* In the `[package].aws` folder you can find the class `AwsClients` where you can put all your AWS Clients as singletons (they are thread safe). Currently there is only the SSM Client (for System Manager).
 
 Let's see the code for one of our Lambda (MultLambda):
 
 image::quickstart-mult-lambda-code.png[alt=MultLambda code, align=left]
 
-You can see the `MultLambda` code is very simple (as `SumLambda`), using the business service as a singleton (line 22), implementing the interface `APIGatewayProxyLambda` only method `handleRequest`.
-Note the use of the Jsonb and Jsonp to convert from/to json to/from our POJOs (lines 31 and 35).
+You can see the `MultLambda` code is very simple (as `SumLambda`), using the business service as a singleton (line 16), implementing the interface `APIGatewayProxyLambda` only method `handleRequest`.
+Note the use of the library https://johnzon.apache.org/[Apache Johnzon] with Jsonb and Jsonp to convert from/to json to/from our POJOs (lines 21 and 26).
 
-As we said, we use `MicrolamDemoLambda` as a proxy to redirect the call to `MultLambda` and `SumLambda` depending on the target resource `/mult` or `/sum`:
+As we said, we use `MicrolamLambda` as a proxy to redirect the call to `MultLambda` and `SumLambda` depending on the target resource `/mult` or `/sum`:
 
 image::quickstart-microlambda-code.png[alt=MicrolamLambda code, align=left]
 
-As you can see, `MicrolamDemoLambda` implements the `registerAllLambda()` method from its abstract mother class and map each endpoint to a given lambda (it may be the same), the mapping is:
+As you can see, `MicrolamLambda` implements the `registerAllLambda()` method from its abstract mother class and map each endpoint to a given lambda (it may be the same), the mapping is:
 
 [source,java,subs=attributes+]
 ----
@@ -172,15 +169,10 @@ Where:
 * [SPACE] is the space character
 * [RESOURCE] is the resource for AWS, or endpoint (here `/mult` or `/sum`)
 
-Also you can find the `static` bloc where `AwsClients` and `LoggingConfiguration` are configured lines 14-17.
-
-Lines 25-29, this code allow to update the LogLevel using the SystemParameter `DEBUG`. this code needs to be there to avoid `SnapStart` for freezing it in its snapshot.  
-
-
 [TIP]
 .Solving the aggregated log problem
 ====
-As only the `MicrolamDemoLambda` is deployed to AWS, the logs from `MultLambda` and `SumLambda` will be available in Cloudwatch at the same place inside `MicrolamDemoLambda` logs. The `MicrolamDemoLambda` mother class is logging at the beginning in which Lambda it is redirecting.
+As only the `MicrolamLambda` is deployed to AWS, the logs from `MultLambda` and `SumLambda` will be available in Cloudwatch at the same place inside `MicrolamLambda` logs. The `MicrolamLambda` mother class is logging at the beginning in which Lambda it is redirecting.
 Be careful to always map any new Lambda, but even if you forgot to map it, the logs will tell you exactly which mapping was not found.
 ====
 
@@ -218,16 +210,16 @@ Generating the Lambda Java deployment package is coming from the profile `-Pjava
 [TIP]
 .Which Java version to choose ?
 ====
-Currently AWS supports `Java 8` , `Java 11` and `Java 17` Runtimes, but it is possible to use a Custom Runtime to deploy also for `Java 20` or `Java 19`. Microlam is providing the maven argument `-Djava20layer=axx64` or `-Djava19layer=axx64` for bringing the layer, see next TIP for detailed instructions and this project (https://github.com/microlam-io/lambda-java20-layer)[AWS Lambda Java 20 Runtime] or this one (https://github.com/microlam-io/lambda-java19-layer)[AWS Lambda Java 19 Runtime].
-By default, Microlam is configured by default to use `Java 17`, but you can change this to `Java 20` or `Java 19` by setting the property `release.version` to 20 or 19.
+Currently AWS supports only `Java 8` or `Java 11` Runtimes, but it is possible to use a Custom Runtime to deploy also for `Java 17` or `Java 19`. Microlam is providing the maven argument `-Djava17layer=axx64` or `-Djava19layer=axx64` for bringing the layer, see next TIP for detailed instructions and this project (https://github.com/microlam-io/lambda-java17-layer)[AWS Lambda Java 17 Runtime] or this one (https://github.com/microlam-io/lambda-java19-layer)[AWS Lambda Java 19 Runtime].
+By default, Microlam is configured by default to use `Java 11`, but you can change this to `Java 17` or `Java 19` by setting the property `release.version` to 17 or 19.
 ====
 
 [TIP]
-.How to use Java 20 or Java 19?
+.How to use Java 17 or Java 19?
 ====
-First modify the pom.xml property: `release.version` to 20 or 19.
-Then use the command `mvn package -Djava20layer=axx64` (or `-Djava19layer=axx64`) where `axx64` is `amd64` or `arm64`. This brings the java 20/19 layer in your `target/` folder.
-You need to deploy the Java 20/19 Layer and the simplest way is to use the CDK (but using the AWS console is also possible), see and update as necessary the Class `[xxx].devops.cdk.CreateApp` (from `src/test` folder).
+First modify the pom.xml property: `release.version` to 17 or 19.
+Then use the command `mvn package -Djava17layer=axx64` (or `-Djava19layer=axx64`) where `axx64` is `amd64` or `arm64`. This brings the java 17/19 layer in your `target/` folder.
+You need to deploy the Java 17/19 Layer and the simplest way is to use the CDK (but using the AWS console is also possible), see and update as necessary the Class `[xxx].devops.cdk.CreateApp` (from `src/test` folder).
 ====
 
 
@@ -241,15 +233,15 @@ It is important to reduce the developement cycle develop-test-develop as much as
 
 For an introduction to the subject of Native compilation for Java, you can refer to this https://frank-afriat.medium.com/lets-compile-your-aws-lambda-in-java-eafc24aae269[article].
 
-The native build is depending on the java version (`java11`, `java17`, `java19` or  `Java20`) and the target architecture (`amd64` or `arm64`).
+The native build is depending on the java version (`java11`, `java17` or `java19`) and the target architecture (`amd64` or `arm64`).
 
 You need to provide this information in the maven command line using `-Dnative=javaXX-axx64` (by replacing XX and xx with the correct values).
 
-Let's say your target is `java17-amd64`, if everything is ready, you just have to use this maven command:
+Let's say your target is `java11-amd64`, if everything is ready, you just have to use this maven command:
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Dnative=java17-amd64 -Pcompile
+mvn package -Dnative=java11-amd64 -Pcompile
 ----
 
 In case the build is successful, the Native deployment package is in the `target` folder with the name `[xxx]-aws-lambda-native.zip`.
@@ -263,7 +255,7 @@ This can be done by this maven command:
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Dnative=java17-amd64 -Pconfig
+mvn package -Dnative=java11-amd64 -Pconfig
 ----
 
 At the end of the build, a container is running, letting you run your tests on it :
@@ -278,7 +270,7 @@ Then it is a good idea, to compile again the Native lambda which can be done wit
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Dnative=java17-amd64 -Pcompile
+mvn package -Dnative=java11-amd64 -Pcompile
 ----
 
 This will copy the Native deployment package to the `target` folder with the name `[xxx]-aws-lambda-native.zip`.
@@ -287,7 +279,7 @@ Then test locally the result of your compilation:
 
 [source,bash,subs=attributes+]
 ----
-mvn package -Dnative=java17-amd64 -Prun
+mvn package -Dnative=java11-amd64 -Prun
 ----
 
 At the end of the build, a container is running, letting you try your native lambda locally.
@@ -295,13 +287,6 @@ At the end of the build, a container is running, letting you try your native lam
 In our case, you can run again the Junit Tests in the class in `[xxx].devops.LocalLambdaTests`.
 
 If everything is working as expected, you are ready to generate your deployment package.
-
-
-[TIP]
-.Using Oracle GraalVM instead of GraalVM CE
-====
-You may use Oracle GraalVM instead of GraalVM CE by using the parameter `-Dnative=oracle-javaXX-axx64` where XX = 17 or 20
-====
 
 === The Native configuration
 
@@ -319,7 +304,7 @@ image::quickstart-files-src-test.png[alt=Files in src/main/java, align=left]
 
 * In the `[package].devops` folder, you can find code to help you test and deploy your Lambda.
 * In the `[package].devops.cdk` folder, you can find the class `CreateApp` including all what is necessary to deploy the complete Application to AWS using AWS CDK.
-* In the `[package]` folder, you can find the Class `LambdaTest`, which show you how to test your Lambda code without testing the Lambda Machinery for Unit testing.
+* In the `[package]` folder, you can find the Class LambdaTest, which show you how to test your Lambda code without testing the Lambda Machinery for Unit testing.
 
 === Deploying your Application with the CDK
 
@@ -353,17 +338,16 @@ cdk destroy
 
 == Logging
 
-By default, the project is now using https://slf4j.org[`SLF4J`] with `slf4j-api-2.0.7.jar` and `slf4j-jdk14-2.0.7.jar` with a custom Handler for AWS Lambda from `microlam-java-logging` with these features:
+By default, the project is using https://github.com/microlam-io/slf4j-simple-lambda[slf4j-simple-lambda] which is a fork of `slf4j-simple` dedicated to AWS Lambda with these features:
 
-* Support for Default Runtime & Custom Runtime (without configuration change)
-* Possible to opt for Json Logging by changing a flag to true (`LoggingConfiguration` class)
-* Use of System Manager/Parameter `DEBUG` set to `"true"`` to dynamically log to DEBUG with current deployment.
+* Support for AWSRequestId
+* Allow env properties with underscore instead of point to be compatible with the AWS lambda env property naming rules
 
-You can change the configuration by updating the class  `LoggingConfiguration`.
+You can change the configuration by updating the file  `simplelogger.properties`.
 
 All the logs will be found in `CloudWatch` as usual.
 
-For understanding the Java Aws Lambda Logging problem you can refer to this https://frank-afriat.medium.com/solving-the-java-aws-lambda-logging-problem-305b06df457f[article].
+For understanding how `slf4j-simple-lambda` solves the Java Aws Lambda Logging problem you can refer to this https://frank-afriat.medium.com/solving-the-java-aws-lambda-logging-problem-305b06df457f[article].
 
 == Microlam
 

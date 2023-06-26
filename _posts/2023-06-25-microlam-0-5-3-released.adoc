@@ -1,0 +1,33 @@
+---
+layout: post
+title: 'Microlam 0.5.3 released - Support Java 20 and Oracle GraalVM !'
+date: 2022-06-26
+tags: release
+synopsis: Microlam 0.5.3 - Support Java 20 and Oracle GraalVM !
+author: fafriat
+---
+
+Microlam is a Java micro-framework dedicated to AWS Serverless targeting simplicity, hackability and efficiency:
+
+ * include support for Java 8, Java 11, Java 17, Java 19 & Java 20
+ * using GraalVM from JDK 17 & JDK 20 + Oracle GraalVM free for JAVA 17 & JAVA 20
+ * add support for AWS SnapStart from the CDK and SAM for Java 11 and Java 17
+ * New logging System based on slf4j and Java Logging with JSON support and Hot reload of Log Level
+ * Return to Jakarta Json-P & Json-B
+ * using directly docker command and Dockerfiles
+ * Support for multi-account & AWS environments
+ * Support for S3 Accelerated Transfer for the deployment bucket to speed your development/deployment cycle.
+ * Enhanced quickstart project with System Manager/ Parameter Store Support
+ * more easy to use than ever
+
+== Come Join Us
+
+We value your feedback a lot so please report bugs, ask for improvements... Let's build something great together!
+
+If you are a Microlam user or just curious, don't be shy and join our welcoming community:
+
+ * provide feedback on https://github.com/microlam-io/microlam/issues[GitHub];
+ * craft some code and https://github.com/microlam-io/microlam/pulls[push a PR];
+ * discuss with us on https://microlam.zulipchat.com/[Zulip] and on the https://groups.google.com/d/forum/microlam-io[mailing list];
+ * ask your questions on https://stackoverflow.com/questions/tagged/microlam[Stack Overflow].
+

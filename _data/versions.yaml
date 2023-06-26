@@ -1,11 +1,12 @@
 microlam:
-  version: 0.5.1
-  announce: /blog/microlam-0-5-1-released/
+  version: 0.5.3
+  announce: /blog/microlam-0-5-3-released/
 graalvm: 22.3.0
 jdk: "11+"
 maven: 3.8.1+
 documentation:
   - 'main'
   - 'latest'
+  - '0.5.1'
   - '0.3.3'
-
+ 

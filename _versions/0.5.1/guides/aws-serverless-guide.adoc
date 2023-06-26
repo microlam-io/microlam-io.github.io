@@ -126,45 +126,19 @@ package xxx.aws.devops;
 import io.microlam.aws.auth.AwsProfileRegionClientConfigurator;
 import software.amazon.awssdk.regions.Region;
 
-public enum Aws {
+public class Aws {
 	
-	PROD("companyprod", "eu-west-1", "companyprod-deployment", true);
+	public final static String PROFILE = "companydev";
+	public final static String REGION = "eu-west-1";
+	public final static String DEPLOYMENT_BUCKET = "companydev-deployment";
 	
-	public final String profile;
-	public final String region;
-	public final String bucket;
-	public final boolean useS3TransferAcceleration;
-	
-	private Aws(String profile, String region, String bucket, boolean useS3TransferAcceleration) {
-		this.profile = profile;
-		this.region = region;
-		this.bucket = bucket;
-		this.useS3TransferAcceleration = useS3TransferAcceleration;
+	public static void configure() {
+	   	AwsProfileRegionClientConfigurator.setProfile(PROFILE);
+	 	AwsProfileRegionClientConfigurator.setRegion(Region.of(REGION));
 	}
-	
-	public void configure() {
-	   	AwsProfileRegionClientConfigurator.setProfile(profile);
-	 	AwsProfileRegionClientConfigurator.setRegion(Region.of(region));
-	}
+
 }
 ----
-
-
-You may add another enum like this:
-[source,java,subs=attributes+]
-----
-DEV("companydev", "eu-west-1", "companydev-deployment", true);
-----
-
-In order to handle you DEV environment and account.
-
-[TIP]
-.Use of S3 Accelerated Transfer
-====
-The last parameter in the `Aws` constructor is the `boolean` `useS3TransferAcceleration`.
-It is so useful for reducing your deployment time that it is true by default but this can cause an increase in your AWS billing.
-====
-
 
 As you see, this code is using the class `AwsProfileRegionClientConfigurator` available from dependency:
 
@@ -183,7 +157,7 @@ As you see, this code is using the class `AwsProfileRegionClientConfigurator` av
 You may need to remove the scope test in case you are using the `AwsProfileRegionClientConfigurator` inside `src/main/java`.
 ====
 
-Then you will be able to use this configuration in your tests with `Aws.PROD.configure()`, like it is done in provided test in class `UploadAndUpdateLambda`:
+Then you will be able to use this configuration in your tests with `Aws.configure()`, like it is done in provided test in class `UploadAndUpdateLambda`:
 
 [source,java,subs=attributes+]
 ----
@@ -200,7 +174,7 @@ public class UploadAndUpdateLambda {
 
 	@Test
 	public void process() {
-		Aws.PROD.configure();
+		Aws.configure();
 
 	 	File file = new File("target/xxxx-lambda-1.0-SNAPSHOT-aws-lambda.zip");
 	 	String bucket = Aws.DEPLOYMENT_BUCKET;
@@ -231,12 +205,12 @@ S3Client s3Client = AwsProfileRegionClientConfigurator.getInstance().configure(S
 DynamoDbClient dynamoDbClient = AwsProfileRegionClientConfigurator.getInstance().configure(DynamoDbClient.builder()).build();
 ----
 
-I suggest to use the class `[package].aws.AwsClients` where you can put all your AWS Clients.
+
 
 [TIP]
 .All the AWS Clients are Threadsafe
 ====
-As the creation of an AWS client has a cost, it is very useful to create your AWS Clients as singletons (static). In that case, you need to verify that `Aws.PROD.configure()` will occur before the initialization of your AWS clients, for example in a static block before the static fields.
+As the creation of an AWS client has a cost, it is very useful to create your AWS Clients as singletons (static). In that case, you need to verify that `Aws.configure()` will occur before the initialization of your AWS clients, for example in a static block before the static fields.
 ====
 
 === For the AWS SAM CLI
