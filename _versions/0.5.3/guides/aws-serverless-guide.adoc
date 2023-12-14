@@ -28,7 +28,7 @@ To complete this guide, you need:
 
 * from 15 minutes to 1 hour
 * an IDE
-* JDK 21+ installed with `JAVA_HOME` configured appropriately
+* JDK 11+ installed with `JAVA_HOME` configured appropriately
 * Apache Maven {maven-version}
 * https://docs.docker.com/get-docker/[Docker]
 * https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html[AWS CLI]

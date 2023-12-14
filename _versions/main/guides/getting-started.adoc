@@ -27,7 +27,7 @@ To complete this guide, you need:
 
 * from 15 minutes to 1 hour
 * an IDE
-* JDK 17+ installed with `JAVA_HOME` configured appropriately (The best is to use https://aws.amazon.com/corretto/[Amazon Corretto] build of OpenJDK)
+* JDK 21+ installed with `JAVA_HOME` configured appropriately (The best is to use https://aws.amazon.com/corretto/[Amazon Corretto] build of OpenJDK)
 * Apache Maven {maven-version}
 * https://docs.docker.com/get-docker/[Docker]
 * https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html[AWS CLI]
@@ -218,7 +218,7 @@ Generating the Lambda Java deployment package is coming from the profile `-Pjava
 [TIP]
 .Which Java version to choose ?
 ====
-Currently AWS supports `Java 8` , `Java 11` and `Java 17` Runtimes, but it is possible to use a Custom Runtime to deploy also for `Java 20` or `Java 19`. Microlam is providing the maven argument `-Djava20layer=axx64` or `-Djava19layer=axx64` for bringing the layer, see next TIP for detailed instructions and this project (https://github.com/microlam-io/lambda-java20-layer)[AWS Lambda Java 20 Runtime] or this one (https://github.com/microlam-io/lambda-java19-layer)[AWS Lambda Java 19 Runtime].
+Currently AWS supports `Java 8` , `Java 11`, `Java 17` and `Java 21` Runtimes, but it is possible to use a Custom Runtime to deploy also for `Java 20` or `Java 19`. Microlam is providing the maven argument `-Djava20layer=axx64` or `-Djava19layer=axx64` for bringing the layer, see next TIP for detailed instructions and this project (https://github.com/microlam-io/lambda-java20-layer)[AWS Lambda Java 20 Runtime] or this one (https://github.com/microlam-io/lambda-java19-layer)[AWS Lambda Java 19 Runtime].
 By default, Microlam is configured by default to use `Java 17`, but you can change this to `Java 20` or `Java 19` by setting the property `release.version` to 20 or 19.
 ====
 
@@ -241,7 +241,7 @@ It is important to reduce the developement cycle develop-test-develop as much as
 
 For an introduction to the subject of Native compilation for Java, you can refer to this https://frank-afriat.medium.com/lets-compile-your-aws-lambda-in-java-eafc24aae269[article].
 
-The native build is depending on the java version (`java11`, `java17`, `java19` or  `Java20`) and the target architecture (`amd64` or `arm64`).
+The native build is depending on the java version (`java11`, `java17`, `java19`,  `Java20` or  `Java21`) and the target architecture (`amd64` or `arm64`).
 
 You need to provide this information in the maven command line using `-Dnative=javaXX-axx64` (by replacing XX and xx with the correct values).
 
@@ -270,7 +270,7 @@ At the end of the build, a container is running, letting you run your tests on i
 
 In our case, you can run the Junit Tests in the class in `[xxx].devops.LocalLambdaTests`.
 
-The generated configuration is updated (and merged) every 30s in the folder: `target/[artifactId]-[version]-native-config/java11-amd64/function/config/`.
+The generated configuration is updated (and merged) every 30s in the folder: `target/[artifactId]-[version]-native-config/java17-amd64/function/config/`.
 
 You can manually copy the files to the folder `src/main/resources/META-INF/native-image/[groupId]/[artifactId]/`.
 
@@ -300,7 +300,7 @@ If everything is working as expected, you are ready to generate your deployment 
 [TIP]
 .Using Oracle GraalVM instead of GraalVM CE
 ====
-You may use Oracle GraalVM instead of GraalVM CE by using the parameter `-Dnative=oracle-javaXX-axx64` where XX = 17 or 20
+You may use Oracle GraalVM instead of GraalVM CE by using the parameter `-Dnative=oracle-javaXX-axx64` where XX = 17, 20 or 21
 ====
 
 === The Native configuration

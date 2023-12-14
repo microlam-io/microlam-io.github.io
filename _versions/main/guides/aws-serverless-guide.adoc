@@ -28,7 +28,7 @@ To complete this guide, you need:
 
 * from 15 minutes to 1 hour
 * an IDE
-* JDK 11+ installed with `JAVA_HOME` configured appropriately
+* JDK 21+ installed with `JAVA_HOME` configured appropriately
 * Apache Maven {maven-version}
 * https://docs.docker.com/get-docker/[Docker]
 * https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html[AWS CLI]
@@ -311,6 +311,8 @@ See complete code in Class `xxx.devops.cdk.CreateApp` in `src/test/java`.
 
 Most of our applications depends on secrets or parameters you prefer to keep externally from your code.
 AWS is providing a service for that (System Manager / Parameter Store) you can leverage easily with Microlam. 
+
+Microlam quickstart project is now including the class `[package].params.SystemParameters` you 
 
 === Maven configuration
 

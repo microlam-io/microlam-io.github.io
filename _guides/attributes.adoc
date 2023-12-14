@@ -1,8 +1,8 @@
 :imagesdir: /guides/images
 
 :project-name: Microlam
-:microlam-version: 0.5.3
-:microlam-lambda-quickstart-version: 0.9.7
+:microlam-version: 0.6.1
+:microlam-lambda-quickstart-version: 0.9.10
 
 
 :maven-version: 3.8.1+
