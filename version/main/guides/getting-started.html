@@ -110,7 +110,7 @@
         
         
           
-        <option value="latest" >0.5.3 - Latest</option>
+        <option value="latest" >0.6.1 - Latest</option>
         
         
       
@@ -199,7 +199,7 @@ This guide covers:</p>
 <p>an IDE</p>
 </li>
 <li>
-<p>JDK 17+ installed with <code>JAVA_HOME</code> configured appropriately (The best is to use <a href="https://aws.amazon.com/corretto/">Amazon Corretto</a> build of OpenJDK)</p>
+<p>JDK 21+ installed with <code>JAVA_HOME</code> configured appropriately (The best is to use <a href="https://aws.amazon.com/corretto/">Amazon Corretto</a> build of OpenJDK)</p>
 </li>
 <li>
 <p>Apache Maven 3.6.2+</p>
@@ -317,7 +317,7 @@ You need to configure your paths (so docker command can be found) in the <code>t
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.9.7</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn archetype:generate -DarchetypeGroupId=io.microlam -DarchetypeArtifactId=microlam-lambda-quickstart -DarchetypeVersion=0.9.10</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -546,7 +546,7 @@ In order to offer an uniform development experience (for linux, MacOS or Windows
 <td class="content">
 <div class="title">Which Java version to choose ?</div>
 <div class="paragraph">
-<p>Currently AWS supports <code>Java 8</code> , <code>Java 11</code> and <code>Java 17</code> Runtimes, but it is possible to use a Custom Runtime to deploy also for <code>Java 20</code> or <code>Java 19</code>. Microlam is providing the maven argument <code>-Djava20layer=axx64</code> or <code>-Djava19layer=axx64</code> for bringing the layer, see next TIP for detailed instructions and this project (<a href="https://github.com/microlam-io/lambda-java20-layer)">AWS Lambda Java 20 Runtime</a> or this one (<a href="https://github.com/microlam-io/lambda-java19-layer)">AWS Lambda Java 19 Runtime</a>.
+<p>Currently AWS supports <code>Java 8</code> , <code>Java 11</code>, <code>Java 17</code> and <code>Java 21</code> Runtimes, but it is possible to use a Custom Runtime to deploy also for <code>Java 20</code> or <code>Java 19</code>. Microlam is providing the maven argument <code>-Djava20layer=axx64</code> or <code>-Djava19layer=axx64</code> for bringing the layer, see next TIP for detailed instructions and this project (<a href="https://github.com/microlam-io/lambda-java20-layer)">AWS Lambda Java 20 Runtime</a> or this one (<a href="https://github.com/microlam-io/lambda-java19-layer)">AWS Lambda Java 19 Runtime</a>.
 By default, Microlam is configured by default to use <code>Java 17</code>, but you can change this to <code>Java 20</code> or <code>Java 19</code> by setting the property <code>release.version</code> to 20 or 19.</p>
 </div>
 </td>
@@ -592,7 +592,7 @@ You need to deploy the Java 20/19 Layer and the simplest way is to use the CDK (
 <p>For an introduction to the subject of Native compilation for Java, you can refer to this <a href="https://frank-afriat.medium.com/lets-compile-your-aws-lambda-in-java-eafc24aae269">article</a>.</p>
 </div>
 <div class="paragraph">
-<p>The native build is depending on the java version (<code>java11</code>, <code>java17</code>, <code>java19</code> or  <code>Java20</code>) and the target architecture (<code>amd64</code> or <code>arm64</code>).</p>
+<p>The native build is depending on the java version (<code>java11</code>, <code>java17</code>, <code>java19</code>,  <code>Java20</code> or  <code>Java21</code>) and the target architecture (<code>amd64</code> or <code>arm64</code>).</p>
 </div>
 <div class="paragraph">
 <p>You need to provide this information in the maven command line using <code>-Dnative=javaXX-axx64</code> (by replacing XX and xx with the correct values).</p>
@@ -630,7 +630,7 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 <p>In our case, you can run the Junit Tests in the class in <code>[xxx].devops.LocalLambdaTests</code>.</p>
 </div>
 <div class="paragraph">
-<p>The generated configuration is updated (and merged) every 30s in the folder: <code>target/[artifactId]-[version]-native-config/java11-amd64/function/config/</code>.</p>
+<p>The generated configuration is updated (and merged) every 30s in the folder: <code>target/[artifactId]-[version]-native-config/java17-amd64/function/config/</code>.</p>
 </div>
 <div class="paragraph">
 <p>You can manually copy the files to the folder <code>src/main/resources/META-INF/native-image/[groupId]/[artifactId]/</code>.</p>
@@ -672,7 +672,7 @@ which is not covering the cases of usage of Java Reflection for example, in our 
 <td class="content">
 <div class="title">Using Oracle GraalVM instead of GraalVM CE</div>
 <div class="paragraph">
-<p>You may use Oracle GraalVM instead of GraalVM CE by using the parameter <code>-Dnative=oracle-javaXX-axx64</code> where XX = 17 or 20</p>
+<p>You may use Oracle GraalVM instead of GraalVM CE by using the parameter <code>-Dnative=oracle-javaXX-axx64</code> where XX = 17, 20 or 21</p>
 </div>
 </td>
 </tr>
